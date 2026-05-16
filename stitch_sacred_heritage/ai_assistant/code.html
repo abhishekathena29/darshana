@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sudarshan - AI Temple Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#241a00",
+                    "outline-variant": "#dbc2b0",
+                    "surface-dim": "#dbdad7",
+                    "on-tertiary-container": "#713200",
+                    "surface-variant": "#e3e2e0",
+                    "secondary-fixed-dim": "#e9c349",
+                    "on-tertiary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#fed65b",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed": "#321200",
+                    "primary": "#a14009",
+                    "primary-fixed-dim": "#ffb596",
+                    "on-primary-container": "#792b00",
+                    "tertiary-fixed": "#ffdbc9",
+                    "on-secondary-container": "#745c00",
+                    "surface-container-highest": "#e3e2e0",
+                    "background": "#faf9f6",
+                    "inverse-surface": "#2f312f",
+                    "surface-container-low": "#f4f3f1",
+                    "surface-container-high": "#e9e8e5",
+                    "tertiary-fixed-dim": "#ffb68c",
+                    "on-primary-fixed": "#360f00",
+                    "on-surface-variant": "#554336",
+                    "surface-tint": "#a14009",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#753401",
+                    "primary-container": "#ff9768",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface": "#faf9f6",
+                    "inverse-on-surface": "#f2f1ee",
+                    "secondary-fixed": "#ffe088",
+                    "surface-container": "#efeeeb",
+                    "primary-fixed": "#ffdbcd",
+                    "secondary": "#735c00",
+                    "tertiary-container": "#f79b62",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#7d2d00",
+                    "surface-bright": "#faf9f6",
+                    "on-background": "#1a1c1a",
+                    "on-surface": "#1a1c1a",
+                    "outline": "#887364",
+                    "tertiary": "#934b19",
+                    "inverse-primary": "#ffb596",
+                    "on-secondary-fixed-variant": "#574500"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Noto Serif', serif; }
+        .glass-header {
+            background: rgba(250, 249, 246, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-[#faf9f6]/80 dark:bg-stone-900/80 backdrop-blur-md shadow-sm shadow-stone-200/50 dark:shadow-none docked full-width top-0 sticky z-50 flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-primary-fixed flex items-center justify-center">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a serene man with a gentle smile and spiritual attire, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbjFPU83KfenYDa16RYo87cvzatV0i6o3q8rWbGBi5H67XHCn3Zzl2QNH741kMJwtaPjL8VcaDan2hd2I_FU9PLuUs5GppmA0IqiO6WAlmFMJhjkjO2KYuUDU5Uv6qHeO1q1KLgTOetFOLX1mfYAjkbStWElzKjhHkz_PVKQxpnyRYmjbTHKi3YwrOsO0oXPfV5wyE3Ujy5SkHoD0BlRxXAdcaH_DVG6hXje4rlGbAKyCcJrIM2z59QmRyFGViQ_Sreug1jLYXCkg"/>
+</div>
+<h1 class="text-2xl font-serif italic text-[#a14009] dark:text-[#ff9768]">Sudarshan</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors duration-300 p-2 rounded-full">notifications</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 max-w-4xl mx-auto w-full px-4 pt-6 pb-32 flex flex-col gap-8">
+<!-- Greeting Section -->
+<section class="flex flex-col items-center text-center space-y-4 py-8">
+<div class="w-20 h-20 bg-primary-container/20 rounded-full flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<h2 class="text-3xl md:text-4xl text-on-surface font-headline leading-tight">Namaste, I am your Sacred Path Guide...</h2>
+<p class="text-on-surface-variant max-w-md mx-auto font-body">Ask me anything about your spiritual journey, temple customs, or travel logistics.</p>
+</section>
+<!-- Suggested Prompts Chips -->
+<section class="flex flex-wrap justify-center gap-3 px-2">
+<button class="bg-surface-container-lowest border border-outline-variant/15 px-6 py-3 rounded-full text-sm font-medium text-primary hover:bg-primary-fixed transition-colors shadow-sm">
+                Plan a 2-day trip to Madurai
+            </button>
+<button class="bg-surface-container-lowest border border-outline-variant/15 px-6 py-3 rounded-full text-sm font-medium text-primary hover:bg-primary-fixed transition-colors shadow-sm">
+                Nearby temples with evening sevas
+            </button>
+<button class="bg-surface-container-lowest border border-outline-variant/15 px-6 py-3 rounded-full text-sm font-medium text-primary hover:bg-primary-fixed transition-colors shadow-sm">
+                Dress code for Tirupati
+            </button>
+</section>
+<!-- Chat History Area -->
+<section class="flex flex-col gap-6">
+<!-- User Message -->
+<div class="flex justify-end ml-12">
+<div class="bg-primary text-on-primary px-5 py-3 rounded-[1.5rem] rounded-tr-none shadow-md max-w-md">
+<p class="font-body text-sm">Tell me about the best time to visit Madurai Meenakshi Temple and suggest a stay.</p>
+</div>
+</div>
+<!-- AI Response with Itinerary & Map -->
+<div class="flex justify-start mr-8">
+<div class="flex flex-col gap-4 max-w-2xl">
+<!-- Text Response -->
+<div class="bg-surface-container-lowest px-6 py-4 rounded-[1.5rem] rounded-tl-none shadow-sm border border-outline-variant/10">
+<p class="font-body text-on-surface leading-relaxed mb-3">
+                            Madurai is divine throughout the year, but the **October to March** window offers pleasant weather for temple circumambulation. For your stay, I recommend heritage properties near the Chithirai streets to witness the temple's morning vibrations.
+                        </p>
+<p class="font-body text-sm text-on-surface-variant italic">
+                            Custom tip: Women usually wear sarees or churidars; traditional attire is appreciated for the inner sanctum.
+                        </p>
+</div>
+<!-- Interactive Planning: Temple Cards & Map -->
+<div class="flex flex-col md:flex-row gap-4">
+<!-- Temple Discovery Card -->
+<div class="flex-1 bg-surface-container-lowest rounded-xl overflow-hidden shadow-md border border-outline-variant/10">
+<div class="h-32 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="architectural close-up of intricate colorful carvings on a South Indian temple gopuram, evening warm light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4TCv2GLI-N3uZgpDitEt2sbyt3FqRpAn0lVu0RvqduamDW2PR176nnlqsrOnEbrutRHoLNR-aQ1Wz8h_beSjtWokPrY7h0V3zJogzN_JBo9p7zp35cyXyqoJOWlPsfNvDqPw3ylx9zIY0AMXd2OuE5jp3c-3SHwnWAMyKEoUfacP--HaVMuQOzcTWOW-_WayOram9CoSoMcEM5iGIw7AK2OWS-Lj76bXAMinjaM7IF2UXe0_1x3lRnr_aRf2bI4_Go-mFPjZg38A"/>
+</div>
+<div class="p-4">
+<h3 class="text-lg font-headline text-primary mb-1">Meenakshi Amman</h3>
+<p class="text-xs font-label text-secondary tracking-widest uppercase mb-2">Morning Seva 5:00 AM</p>
+<p class="text-sm text-on-surface-variant font-body line-clamp-2">The heart of Madurai, known for its 14 gopurams and thousands of vibrant sculptures.</p>
+</div>
+</div>
+<!-- Map Snippet -->
+<div class="flex-1 bg-surface-container-low rounded-xl overflow-hidden relative border border-outline-variant/10">
+<img class="w-full h-full object-cover opacity-60" data-alt="stylized map view of Madurai city streets with temple landmarks highlighted, warm earthy tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLspVSauhU2xEtxqpzMpEnQAsUOWadmy6MfjymzjBzNVnoR2EnktVIIEviTnfZT2b-_zrzn3CcSYOsgdlES_8wV_8tdCPiLz_9RfnUmlC8M_qmNywkauFG5IL8bjXC8b81TMHY2nQFBAI4DBSqYm_su70flZxUhwo9_8QWHMocD8rOa5_O-j_PWJtdfDUMg4ZMvUwtiH84Td51-TVBBSipCMPi8xT992q2rvCZHHYx_2NEtVDH48hO8oqHnYIg3QSr23pXPiZOVn8"/>
+<div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-surface/90 to-transparent">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="text-xs font-bold text-on-surface font-label uppercase tracking-tighter">Temple District View</span>
+</div>
+<button class="text-[10px] uppercase tracking-widest font-bold text-primary hover:underline self-start">Open in Sacred Maps</button>
+</div>
+</div>
+</div>
+<!-- Stay Recommendation -->
+<div class="bg-surface-container-high/50 p-4 rounded-xl flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="luxury heritage hotel room with traditional teak furniture and warm lamps, view of a courtyard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAta52mYUKVGsc_QJw9jaYHjyGdF33DUHOprC1WGbG0nnnnpbyR31wvRjVrSPxb5z-b0UsdHc3wEKfQs2_u7od_4m9vwpBqPXVONMFflDS7xmHkTKAOorvqSTc_yxtdPhHhHYefvWlkzjsZO1nUsw06-N0xPBD2tVL1h-L5zlh8NxOpQgk_6uTqpr7Ue7zu42EnEIKkICpZqBj236-C506qmIryd-HgLhMq8dMCGFZt_VvxqYQDNoiTKPTfgyXIaSGXYHoAhysEeWo"/>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Heritage Madurai</h4>
+<p class="text-xs text-on-surface-variant">Recommended: 1.2km from Temple North Gate</p>
+<div class="flex gap-1 mt-1">
+<span class="material-symbols-outlined text-[12px] text-secondary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px] text-secondary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px] text-secondary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px] text-secondary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider scale-95 active:scale-90 transition-transform">Book</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Input Bar (Simulating chat focus) -->
+<div class="fixed bottom-24 left-0 w-full px-4 z-50">
+<div class="max-w-4xl mx-auto flex items-center gap-3 bg-surface-container-highest rounded-2xl p-2 shadow-xl border border-outline-variant/10 backdrop-blur-lg">
+<button class="p-3 text-stone-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-stone-400 font-body text-sm py-3" placeholder="Ask about rituals, travel, or history..." type="text"/>
+<button class="bg-gradient-to-tr from-primary to-primary-container p-3 rounded-xl text-on-primary shadow-lg shadow-primary/20 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#faf9f6]/80 dark:bg-stone-900/80 backdrop-blur-md z-50 rounded-t-[1.5rem] shadow-[0_-12px_32px_rgba(26,28,26,0.06)]">
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] dark:hover:text-[#ff9768] transition-all" href="#">
+<span class="material-symbols-outlined">home_max</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] dark:hover:text-[#ff9768] transition-all" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#ffdbcd] dark:bg-[#a14009]/30 text-[#a14009] dark:text-[#ff9768] rounded-2xl px-5 py-2" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">AI Assistant</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] dark:hover:text-[#ff9768] transition-all" href="#">
+<span class="material-symbols-outlined">person_celebrate</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

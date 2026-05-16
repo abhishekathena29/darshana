@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sudarshan | Cultural &amp; Spiritual Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#241a00",
+                    "outline-variant": "#4a443f",
+                    "surface-dim": "#080a08",
+                    "on-tertiary-container": "#ffdbc9",
+                    "surface-variant": "#1a1c1a",
+                    "secondary-fixed-dim": "#e9c349",
+                    "on-tertiary": "#ffffff",
+                    "error-container": "#93000a",
+                    "secondary-container": "#735c00",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed": "#321200",
+                    "primary": "#ffb596",
+                    "primary-fixed-dim": "#ffb596",
+                    "on-primary-container": "#ffdbcd",
+                    "tertiary-fixed": "#ffdbc9",
+                    "on-secondary-container": "#ffe088",
+                    "surface-container-highest": "#222422",
+                    "background": "#050705",
+                    "inverse-surface": "#e3e2e0",
+                    "surface-container-low": "#121412",
+                    "surface-container-high": "#1a1c1a",
+                    "tertiary-fixed-dim": "#ffb68c",
+                    "on-primary-fixed": "#360f00",
+                    "on-surface-variant": "#dbc2b0",
+                    "surface-tint": "#ffb596",
+                    "on-primary": "#5e1900",
+                    "on-secondary": "#3a2e00",
+                    "on-tertiary-fixed-variant": "#753401",
+                    "primary-container": "#7d2d00",
+                    "surface-container-lowest": "#050605",
+                    "error": "#ffb4ab",
+                    "surface": "#050705",
+                    "inverse-on-surface": "#1a1c1a",
+                    "secondary-fixed": "#ffe088",
+                    "surface-container": "#0d0f0d",
+                    "primary-fixed": "#ffdbcd",
+                    "secondary": "#e9c349",
+                    "tertiary-container": "#713200",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#7d2d00",
+                    "surface-bright": "#1e211e",
+                    "on-background": "#e3e2e0",
+                    "on-surface": "#e3e2e0",
+                    "outline": "#a08d81",
+                    "tertiary": "#ffb68c",
+                    "inverse-primary": "#a14009",
+                    "on-secondary-fixed-variant": "#574500",
+                    "ivory": "#fdfaf1",
+                    "gold": "#d4af37"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.hide-scrollbar::-webkit-scrollbar {
+    display: none
+    }
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none
+    }
+.cultural-scroll-indicator {
+    height: 2px;
+    background: linear-gradient(to right, #d4af37 30%, transparent 100%)
+    }
+.mystical-overlay {
+    background: radial-gradient(circle at 20% 30%, rgba(13, 58, 52, 0.25) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(10, 41, 35, 0.3) 0%, transparent 50%), linear-gradient(to bottom, rgba(5, 7, 5, 0.8), rgba(5, 7, 5, 0.95))
+    }
+.botanical-bg {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAUU6Sv4U9YIhEEwMVEG1GK2XKC36lAXvHhAOk2Ywcb5XJqM1CElZhaoTe6BFmLzyE8SDM9we2O7yS01vb-oztRNL4B2jqT4gcpz5Cd_gN5qoOSWVI9FX9yg-58ds5RNVyEpLDM-86MjNzO3Sbupxx2HmGtGTFM1RHd4FuBhH2D1q_akVkx6FGQr7DKITNYnMperfZ9liX37mqr_gjhDKESCXTLcS--XpnEYSHwho5feBpMmYhpkN_6AZviyCYw889ckjrO8JdKCbY);
+    background-repeat: repeat;
+    opacity: 0.05
+    }
+.divine-silhouette {
+    position: fixed;
+    bottom: -5%;
+    right: -5%;
+    width: 60%;
+    height: 80%;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBEwfEb_TRm96ELULdyI2I2cTdefNsWRpsTyyge_N2vK-HFsNktvj6cc9Qamn5RPidDtjlIDHzEWnPdEVyi2hWu7GVXTC7wPkLCLADMgg34lNPIPMspjWu4v_zPnxLLMis6jH1OX4P3Qbgy2lThqswZ7cOCZQNsrwWwLHBWCba20ymb65IGmrlfVKmkiTlJ_WEGIqZLr7mIO-5We4TDc_se-KZI1Vg13XOmFRye4F_b-yW8XMUexiLA-8eHOhA_QrEJf9EKcXv4Q8s);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.04;
+    filter: grayscale(100%) brightness(0.5) contrast(1.2);
+    pointer-events: none;
+    z-index: -1;
+    mask-image: linear-gradient(to top, transparent, black, transparent)
+    }
+.glow-accent-teal {
+    box-shadow: 0 0 40px -10px rgba(20, 184, 166, 0.1)
+    }
+.glow-accent-orange {
+    box-shadow: 0 0 40px -10px rgba(249, 115, 22, 0.1)
+    }
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05)
+    }
+body {
+    background-color: #050705;
+    min-height: 100vh
+    }</style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed relative">
+<!-- Background Layers -->
+<div class="fixed inset-0 botanical-bg z-[-2]"></div>
+<div class="fixed inset-0 mystical-overlay z-[-1]"></div>
+<div class="divine-silhouette"></div>
+<!-- TopAppBar -->
+<header class="bg-[#050705]/60 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-white/5">
+<nav class="flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-gold/20 scale-95 active:scale-90 transition-transform cursor-pointer">
+<img alt="User profile photo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3sCWKnAQ7yUouqbzjEyx5pXZhzIV9R8XP_rGyod_nypWHQEwacfAJQ_5evmhqpFqeXybXyKdyYKKTFhPgQO_uDlmOcH0fSv0G5fSKZnrsKa3FLH2F6UqeZcKB8s1bpzXy3LCif6KX5ZGO_IExpGG0uUZFABj41GBjmcycFqX1ew7AyQQ5kre4CWTv8rLHbilNdx3c3HYv47lXrAvYKx_-iTXoF4NxJxCWgRH94xf4WfiqwGd_c2fTqlUR1cjkqr6Lt95OoxjuHCU"/>
+</div>
+<h1 class="text-2xl font-serif italic text-gold">Sudarshan</h1>
+</div>
+<div class="flex items-center gap-6">
+<!-- Desktop Nav -->
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-gold font-bold text-sm tracking-wide" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-gold transition-all text-sm tracking-wide" href="#">Events</a>
+<a class="text-on-surface-variant hover:text-gold transition-all text-sm tracking-wide" href="#">Sacred Spaces</a>
+</div>
+<button class="material-symbols-outlined text-gold hover:bg-white/5 transition-colors duration-300 p-2 rounded-full scale-95 active:scale-90 transition-transform">
+                    notifications
+                </button>
+</div>
+</nav>
+</header>
+<main class="pb-24 relative z-10">
+<!-- Hero Section -->
+<section class="relative px-6 pt-6 mb-12">
+<div class="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] overflow-hidden group border border-white/10 shadow-2xl shadow-black/80">
+<img alt="Grand Brahmotsavam at Tirumala" class="w-full h-full object-cover brightness-[0.6] group-hover:scale-105 transition-transform duration-[2.5s]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEwfEb_TRm96ELULdyI2I2cTdefNsWRpsTyyge_N2vK-HFsNktvj6cc9Qamn5RPidDtjlIDHzEWnPdEVyi2hWu7GVXTC7wPkLCLADMgg34lNPIPMspjWu4v_zPnxLLMis6jH1OX4P3Qbgy2lThqswZ7cOCZQNsrwWwLHBWCba20ymb65IGmrlfVKmkiTlJ_WEGIqZLr7mIO-5We4TDc_se-KZI1Vg13XOmFRye4F_b-yW8XMUexiLA-8eHOhA_QrEJf9EKcXv4Q8s"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 md:p-12 w-full max-w-4xl">
+<span class="inline-block px-4 py-1 mb-4 rounded-full bg-primary/20 text-primary font-label text-xs uppercase tracking-widest font-bold border border-primary/30">Featured Festival</span>
+<h2 class="text-4xl md:text-6xl font-headline text-ivory mb-4 leading-tight italic">Grand Brahmotsavam at Tirumala</h2>
+<p class="text-ivory/70 text-lg mb-8 max-w-2xl font-body">Experience the celestial aura and timeless traditions during the nine-day spiritual celebration of the Lord of Seven Hills.</p>
+<button class="bg-gradient-to-tr from-primary to-[#f79b62] text-on-primary px-8 py-3 rounded-full font-label text-sm uppercase tracking-widest font-bold shadow-xl shadow-primary/20 scale-100 active:scale-95 transition-transform">
+                        Explore Event
+                    </button>
+</div>
+</div>
+</section>
+<!-- Search & Filters -->
+<section class="px-6 mb-16 max-w-6xl mx-auto">
+<div class="glass-card p-2 rounded-[2.5rem] flex flex-col md:flex-row gap-2">
+<div class="flex-grow flex items-center px-6 py-4 gap-4">
+<span class="material-symbols-outlined text-gold">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-ivory placeholder:text-outline/60 font-body text-lg" placeholder="Search for temples, festivals or performances..." type="text"/>
+</div>
+<div class="flex flex-wrap md:flex-nowrap gap-2 p-2">
+<select class="bg-white/5 border-none rounded-2xl px-4 py-2 text-sm font-label text-ivory/80 focus:ring-primary/20 transition-all cursor-pointer hover:bg-white/10">
+<option class="bg-surface">All Cities</option>
+<option class="bg-surface">Tirupati</option>
+<option class="bg-surface">Chennai</option>
+<option class="bg-surface">Varanasi</option>
+</select>
+<select class="bg-white/5 border-none rounded-2xl px-4 py-2 text-sm font-label text-ivory/80 focus:ring-primary/20 transition-all cursor-pointer hover:bg-white/10">
+<option class="bg-surface">Event Type</option>
+<option class="bg-surface">Ritual</option>
+<option class="bg-surface">Concert</option>
+<option class="bg-surface">Festival</option>
+</select>
+<select class="bg-white/5 border-none rounded-2xl px-4 py-2 text-sm font-label text-ivory/80 focus:ring-primary/20 transition-all cursor-pointer hover:bg-white/10">
+<option class="bg-surface">Any Date</option>
+<option class="bg-surface">Today</option>
+<option class="bg-surface">This Weekend</option>
+<option class="bg-surface">Next Week</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Featured Temples Section -->
+<section class="mb-20 px-6">
+<div class="flex justify-between items-end mb-8 max-w-7xl mx-auto">
+<div>
+<span class="text-gold font-label text-xs uppercase tracking-[0.2em] mb-2 block opacity-80">Sacred Sanctuaries</span>
+<h3 class="text-4xl font-headline italic text-ivory">Featured Temples</h3>
+</div>
+<button class="text-gold font-label text-sm uppercase tracking-widest flex items-center gap-2 group">
+                    View Gallery <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 max-w-7xl mx-auto h-[700px] md:h-[600px]">
+<div class="md:col-span-7 bg-surface-container-lowest rounded-[2.5rem] overflow-hidden relative group border border-white/5 glow-accent-teal">
+<img alt="Heritage Temple" class="w-full h-full object-cover brightness-75 group-hover:scale-110 transition-transform duration-[3s]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC8-zMkY0RUdyrxAovlboegmsa1i850vK4UYOW1npJYZ8qpzn8VVFvubu6NobRMJYw_D8ddNSNKWo9geBdFjGra9OC_Numy_5HwrqcNFc90RvxDf_H5YDEhAE0F0IozP9XknQqHEtG8vy7zoidQHyel4kucnXORcpJvuGUvn-lu6bmptUoL4uzXW54soy1wL6ZOOWd2JL-zpeFZHeI_Zcr4XFV3Ks_Zi9OPPcmqU_Rscp4gSGSjPoyLDt6OXJsj2UN1xMKSgDpO20"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8">
+<h4 class="text-ivory text-3xl font-headline mb-1">Meenakshi Amman</h4>
+<p class="text-ivory/60 font-body text-sm flex items-center gap-2"><span class="material-symbols-outlined text-sm text-gold">location_on</span> Madurai, Tamil Nadu</p>
+</div>
+</div>
+<div class="md:col-span-5 flex flex-col gap-6">
+<div class="h-1/2 bg-surface-container-lowest rounded-[2.5rem] overflow-hidden relative group border border-white/5 glow-accent-orange">
+<img alt="Sacred Space" class="w-full h-full object-cover brightness-75 group-hover:scale-110 transition-transform duration-[3s]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH2nCQECscyLgZMmoJxNX-FTOybPTVHjYNo43ArqS1wd-UjwdMZjzpKdzCUd7Z--Q51XmYQuye8I8eaTpqn5RzCC5-mi2frEs6MSFblQZM36E7xzLEVhIcBRhCCdF4n6XClvgXfjXg5mWd0fW9Q9lEtZ05jF-Di1lZVIJwF4_iCywIuyit0I8eThbGoSR4qU9dTRyBEN6kI2CdzMtSgJnksrRHwR2I0P6QCH7TCd1rMf0QnEwTeR2xnsVejYQwH7s4_Gb8QepsZ8M"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6">
+<h4 class="text-ivory text-xl font-headline mb-1">Golden Temple</h4>
+<p class="text-ivory/60 font-body text-xs flex items-center gap-2"><span class="material-symbols-outlined text-xs text-gold">location_on</span> Amritsar, Punjab</p>
+</div>
+</div>
+<div class="h-1/2 bg-surface-container-lowest rounded-[2.5rem] overflow-hidden relative group border border-white/5 glow-accent-teal">
+<img alt="Heritage Detail" class="w-full h-full object-cover brightness-75 group-hover:scale-110 transition-transform duration-[3s]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA63TArA23Q3cQ-yzPFV5WOp54WPwH12_lC_fXuIbT7zXKRFA2TgSza6Rq6MEGzx0oFSKKKMOt_cTgmtwUMNKVTcyjyrXqC8WRO6LrGMZDHAG0KSzSvVA6gTloLIpWHXemU2_7q_22ObsO2NTYbLdToCERe10t7JKCrfmQjejEDZcamO-qL9Jh0L6V9LooYKrMz3uq2kltqZIZNShLNsxrDAZ2dfKnzp2kG5OagStmMsetyXEyUswKrDQcQJSeP7iy1fceo8MWr_EE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6">
+<h4 class="text-ivory text-xl font-headline mb-1">Brihadisvara</h4>
+<p class="text-ivory/60 font-body text-xs flex items-center gap-2"><span class="material-symbols-outlined text-xs text-gold">location_on</span> Thanjavur, Tamil Nadu</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Cultural Performances -->
+<section class="mb-20">
+<div class="max-w-7xl mx-auto px-6 mb-8 flex justify-between items-end">
+<div>
+<span class="text-gold font-label text-xs uppercase tracking-[0.2em] mb-2 block opacity-80">Arts &amp; Melodies</span>
+<h3 class="text-4xl font-headline italic text-ivory">Cultural Performances</h3>
+</div>
+</div>
+<div class="overflow-x-auto hide-scrollbar px-6 flex gap-8 pb-4">
+<!-- Card 1 -->
+<div class="min-w-[320px] glass-card rounded-[2.5rem] p-4 group transition-all hover:bg-white/5 hover:shadow-2xl hover:shadow-black/60">
+<div class="aspect-square rounded-[2rem] overflow-hidden mb-6 border border-white/10">
+<img alt="Performance" class="w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGMEp4Hy7LocA-Jbs1JA9gwrhwHpPQlf7P35k00XW4PyN0gFC3mRP49dtcr4fet9WUSUOhFolnSSwutNOgy_bjucl_XJDyrXTab1gttAUU6t66To7b3MlUA64oEJFj8YeWJ3mEFHEWRydtOqpv0cM6Y0s49eujgURaVESFfze3QkmSQKT15pvzMhqKgcjj2RxGPznmKDeFKh8unTLTLC9qkHWlBdd7Ikv2sTUNKxab6jZeX8WopNLCgrtVrzZCU_ikSLGQzSL5eLQ"/>
+</div>
+<div class="px-2 pb-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-xl font-headline text-ivory">Classical Vocal</h4>
+<span class="bg-primary/20 text-primary text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-tighter border border-primary/30">Live</span>
+</div>
+<p class="text-ivory/60 text-sm font-body mb-4 italic">Smt. Aruna Sairam</p>
+<p class="text-outline text-xs font-body mb-6 flex items-center gap-1"><span class="material-symbols-outlined text-sm text-gold">schedule</span> Oct 24 • 6:30 PM • Music Academy</p>
+<button class="w-full py-3 rounded-2xl border border-gold/30 text-gold font-label text-xs uppercase tracking-widest font-bold hover:bg-gold/10 transition-colors">
+                            View Details
+                        </button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="min-w-[320px] glass-card rounded-[2.5rem] p-4 group transition-all hover:bg-white/5 hover:shadow-2xl hover:shadow-black/60">
+<div class="aspect-square rounded-[2rem] overflow-hidden mb-6 border border-white/10">
+<img alt="Music Concert" class="w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8xGTH7J6s3f6g0qkIMzyL5-YsdzD-SUbNcm4RNa6yAC-JqRJE5OTQtBMR28Jo032kR8Hq8LuGNLC5Q3dH7vANnXKhpFkBDXfkLZOHy6HtJpFf-qGSjTKuQs-wA6H7QlbkGuIa4G7iO17J155Gt1y9kxpWANy9l-2DnPL5KTuFlc_ihGZU7inoSJlvkWvEipkQhc_6O32I93YMd_mf8NUCv59dK_vi6VRBD4CZ2AOJ7zzznEFKGBq0TvKnlaKEewqeDr2Wq0VjVoc"/>
+</div>
+<div class="px-2 pb-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-xl font-headline text-ivory">Sitar Symphony</h4>
+<span class="bg-white/5 text-ivory/60 text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-tighter border border-white/10">Premium</span>
+</div>
+<p class="text-ivory/60 text-sm font-body mb-4 italic">Pandit Ravi Shankar Series</p>
+<p class="text-outline text-xs font-body mb-6 flex items-center gap-1"><span class="material-symbols-outlined text-sm text-gold">schedule</span> Oct 26 • 7:00 PM • NCPA Mumbai</p>
+<button class="w-full py-3 rounded-2xl border border-gold/30 text-gold font-label text-xs uppercase tracking-widest font-bold hover:bg-gold/10 transition-colors">
+                            View Details
+                        </button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="min-w-[320px] glass-card rounded-[2.5rem] p-4 group transition-all hover:bg-white/5 hover:shadow-2xl hover:shadow-black/60">
+<div class="aspect-square rounded-[2rem] overflow-hidden mb-6 border border-white/10">
+<img alt="Dance Event" class="w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP-YR_qg_IRjhs0WlY12EdugvDzhzwaWpBhr9OhqOZBqZg8ZnfjJIbPquLutCEjOcdmviTe47CiY6_eALrcURT-vUovA4Bf00BzYd9MbuzSA2ksamcmEt1gz2NJAZ4gr-LB-pJ9vtoU1MUcYs_skXMjFYBcm8tfUKEvwQaQPMjqN_iCvpN-kEYMyIfW3T5B5x_RXUTo6Liou0dEmB2rsi5DrH92qxGLTdedOfKddv0d3MTtor_2Oba3me1OMkl3p0i46LXw5yzivg"/>
+</div>
+<div class="px-2 pb-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-xl font-headline text-ivory">Odissi Recital</h4>
+<span class="bg-primary/20 text-primary text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-tighter border border-primary/30">Limited</span>
+</div>
+<p class="text-ivory/60 text-sm font-body mb-4 italic">Nrityagram Ensemble</p>
+<p class="text-outline text-xs font-body mb-6 flex items-center gap-1"><span class="material-symbols-outlined text-sm text-gold">schedule</span> Oct 28 • 5:45 PM • Bangalore Palace</p>
+<button class="w-full py-3 rounded-2xl border border-gold/30 text-gold font-label text-xs uppercase tracking-widest font-bold hover:bg-gold/10 transition-colors">
+                            View Details
+                        </button>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-6 mt-4">
+<div class="cultural-scroll-indicator w-32"></div>
+</div>
+</section>
+<!-- Sacred Events This Week -->
+<section class="mb-20 px-6 max-w-7xl mx-auto">
+<div class="mb-12 text-center">
+<span class="text-gold font-label text-xs uppercase tracking-[0.2em] mb-2 block opacity-80">Weekly Curation</span>
+<h3 class="text-4xl font-headline italic text-ivory">Sacred Events This Week</h3>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Event Item 1 -->
+<div class="flex gap-6 items-center p-6 glass-card rounded-[2.5rem] group hover:bg-white/5 transition-colors glow-accent-teal">
+<div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
+<img alt="Floral Ritual" class="w-full h-full object-cover brightness-90 group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK3sOcuTKYJsdselZepRaVy1_tEFgJmmix7NnBH8pXKmsZU5nJ-LBW6Bz61cj6_v9DUDAOPy3cvpXMm-5UTRtO6_DwZ0ONIO9NZv949VYAEiFpurtvfeCoEgkziTtjcuu1gF02pa2qc72jzYJ6EtRCNWEGPtUw_W9pDVN8a7jRE_mjipVLvbM4IWqPKdlccIkmUv_ANAplt6XIYSvdqtd5CBeerjNS85ZsD0788BVKwYq_wV31zyJQXJnYk0zYSFlpvN1bouyhJRo"/>
+</div>
+<div>
+<span class="text-gold font-label text-[10px] uppercase font-bold tracking-widest">Oct 24 • Tuesday</span>
+<h5 class="font-headline text-lg mt-1 text-ivory group-hover:text-gold transition-colors">Vasantotsavam</h5>
+<p class="text-ivory/60 text-xs font-body">The Spring Festival ritual at Kapaleeshwarar Temple.</p>
+</div>
+</div>
+<!-- Event Item 2 -->
+<div class="flex gap-6 items-center p-6 glass-card rounded-[2.5rem] group hover:bg-white/5 transition-colors glow-accent-orange">
+<div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
+<img alt="Temple Bell" class="w-full h-full object-cover brightness-90 group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARfKc8XTKpZdjSbsSuotZYZVApfi6GPXYFO_21VAT659DXB8TUPmwLh4z_eVsJB8brquOau3H0DsvltHSB3ssUMlQ7VwvV9156r8mA85N083uciVy1te01H84VCoa_ywal66EcvFpI4U_rDAt1jKF_KLlfDTscALbP86hhxu9_evsQZx-49vxbawgvpzeuECzND7b_JTZaR5aGjQ-u25czpzazESKHayeavGxbQGdK_U2md7A9GahNl7TD8l-Krxy5Y731_SKTuRQ"/>
+</div>
+<div>
+<span class="text-gold font-label text-[10px] uppercase font-bold tracking-widest">Oct 26 • Thursday</span>
+<h5 class="font-headline text-lg mt-1 text-ivory group-hover:text-gold transition-colors">Abhishekam Ceremony</h5>
+<p class="text-ivory/60 text-xs font-body">Sacred bathing ritual for world peace and prosperity.</p>
+</div>
+</div>
+<!-- Event Item 3 -->
+<div class="flex gap-6 items-center p-6 glass-card rounded-[2.5rem] group hover:bg-white/5 transition-colors glow-accent-teal">
+<div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
+<img alt="Drama" class="w-full h-full object-cover brightness-90 group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIE4Io5DxoaWpj6rPfOj7ys9mHFiRZTjtcdMH5WRRbsZD-z5VD9IsRAZWY55d5c9t6MTDvg_V6RWoVOP8lDUYcRRGMxZRokqf4ydU4wm12emePGxK9ZNSkB48oqMyW3iWSjRZxEtAoQIe_ayOI1tpHQNfgUitoL3FXBxPYveQLvqIJApsekkDbGfj2HVlKTI2o7rCGi2zEoNgH_xKZyWY_0dRfY0db4p8CBUqCr1rrDOTo73nV1d9VQK9KD-vRFC2x8FlKUF9UNNA"/>
+</div>
+<div>
+<span class="text-gold font-label text-[10px] uppercase font-bold tracking-widest">Oct 28 • Saturday</span>
+<h5 class="font-headline text-lg mt-1 text-ivory group-hover:text-gold transition-colors">Srimad Ramayana Play</h5>
+<p class="text-ivory/60 text-xs font-body">Traditional shadow puppetry retelling the epic saga.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / Community -->
+<section class="px-6 mb-20 max-w-7xl mx-auto">
+<div class="bg-primary/5 rounded-[3.5rem] p-12 md:p-20 text-center relative overflow-hidden border border-primary/10">
+<div class="absolute -top-20 -left-20 w-80 h-80 bg-teal-900/20 rounded-full blur-[100px]"></div>
+<div class="absolute -bottom-20 -right-20 w-80 h-80 bg-emerald-900/20 rounded-full blur-[100px]"></div>
+<h3 class="text-4xl md:text-5xl font-headline mb-6 italic text-gold">Join the Sanctuary</h3>
+<p class="text-ivory/70 font-body text-lg max-w-2xl mx-auto mb-10">Receive weekly curations of sacred wisdom, event early-access, and cultural insights directly in your sanctuary.</p>
+<div class="max-w-md mx-auto flex gap-4 p-2 glass-card rounded-2xl border-white/10">
+<input class="bg-transparent border-none focus:ring-0 flex-grow px-4 font-body text-ivory placeholder:text-ivory/30" placeholder="Your spiritual path email..." type="email"/>
+<button class="bg-gold text-on-secondary px-6 py-3 rounded-xl font-label text-xs uppercase tracking-widest font-bold hover:bg-gold/90 transition-colors shadow-lg shadow-gold/20">
+                        Subscribe
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#050705]/80 backdrop-blur-2xl z-50 rounded-t-[2rem] border-t border-white/5 md:hidden">
+<a class="flex flex-col items-center justify-center bg-gold/15 text-gold rounded-2xl px-5 py-2 scale-100 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined">home_max</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-ivory/60 px-5 py-2 hover:text-gold transition-all" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-ivory/60 px-5 py-2 hover:text-gold transition-all" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">AI Assistant</span>
+</a>
+<a class="flex flex-col items-center justify-center text-ivory/60 px-5 py-2 hover:text-gold transition-all" href="#">
+<span class="material-symbols-outlined">person_celebrate</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+<!-- Floating Action Button -->
+<div class="fixed bottom-24 right-8 z-40 hidden md:block">
+<button class="bg-gradient-to-tr from-gold to-primary text-on-secondary w-16 h-16 rounded-full flex items-center justify-center shadow-2xl shadow-gold/40 hover:scale-110 active:scale-95 transition-all group">
+<span class="material-symbols-outlined group-hover:rotate-12 transition-transform">auto_awesome</span>
+</button>
+</div>
+</body></html>

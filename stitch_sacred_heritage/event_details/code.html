@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#241a00",
+                    "outline-variant": "#dbc2b0",
+                    "surface-dim": "#dbdad7",
+                    "on-tertiary-container": "#713200",
+                    "surface-variant": "#e3e2e0",
+                    "secondary-fixed-dim": "#e9c349",
+                    "on-tertiary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#fed65b",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed": "#321200",
+                    "primary": "#a14009",
+                    "primary-fixed-dim": "#ffb596",
+                    "on-primary-container": "#792b00",
+                    "tertiary-fixed": "#ffdbc9",
+                    "on-secondary-container": "#745c00",
+                    "surface-container-highest": "#e3e2e0",
+                    "background": "#faf9f6",
+                    "inverse-surface": "#2f312f",
+                    "surface-container-low": "#f4f3f1",
+                    "surface-container-high": "#e9e8e5",
+                    "tertiary-fixed-dim": "#ffb68c",
+                    "on-primary-fixed": "#360f00",
+                    "on-surface-variant": "#554336",
+                    "surface-tint": "#a14009",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#753401",
+                    "primary-container": "#ff9768",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface": "#faf9f6",
+                    "inverse-on-surface": "#f2f1ee",
+                    "secondary-fixed": "#ffe088",
+                    "surface-container": "#efeeeb",
+                    "primary-fixed": "#ffdbcd",
+                    "secondary": "#735c00",
+                    "tertiary-container": "#f79b62",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#7d2d00",
+                    "surface-bright": "#faf9f6",
+                    "on-background": "#1a1c1a",
+                    "on-surface": "#1a1c1a",
+                    "outline": "#887364",
+                    "tertiary": "#934b19",
+                    "inverse-primary": "#ffb596",
+                    "on-secondary-fixed-variant": "#574500"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "3xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "serif": ["Noto Serif"],
+                    "sans": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-sans selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation Anchor (Shared Component) -->
+<header class="bg-[#faf9f6]/80 dark:bg-stone-900/80 backdrop-blur-md text-[#a14009] dark:text-[#ff9768] docked full-width top-0 sticky z-50 shadow-sm shadow-stone-200/50 dark:shadow-none">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<button class="hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors duration-300 scale-95 active:scale-90 transition-transform p-2 rounded-full">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="text-2xl font-serif italic text-[#a14009] dark:text-[#ff9768]">Sudarshan</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full cursor-pointer">notifications</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="professional headshot of a person with a warm smile, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0ke83SrFkdXrGmkeL6uEOl61VI6UdfzekOEvq_01FdPh5SSwDzS85X-nQVNl9UjREljzOzzHCHiLckV7-3M_xiT2dSm9-WYGiTJxyXP_odU7XPl7CYa9ywZMmgarhKeeVSK1lncmT9oNteXO864nno5jVAPPtp3eTqPyROxbqqfO80WAOHs5CIsoZOudNDM240qB1kkvXercDOwoPfR_XkTswDp3ZsWenMa-ogGrIHKxOh67mVveVTBmSZewDYfvClvBldWTvB78"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-8 pb-32">
+<!-- Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+<div class="lg:col-span-7">
+<div class="relative h-[500px] rounded-3xl overflow-hidden mb-6 shadow-xl shadow-on-surface/5">
+<img class="w-full h-full object-cover" data-alt="vibrant South Indian classical music concert with traditional oil lamps and marigold flower decorations on stage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQsrlmk8xvGBIUL0Nto3N4GDdLGD39x2LJpScU_R-AtAsQri0UhJLbzopDsXo4e818-uzqJG1IT7KRDUotk6O3o8h0sJNtBnWiozul5GXnledQOH3hoH9EbLP6O9gCDOYSatv7tGzgyQCoEYa1boufDACN0WE-j02kdmE33WX88_1z5uQem7dtZ3jYTsuXVt81sDwZoT8HDToyV1rj_J4NBAxkS5daqJQLdXsiwUH30QCHFu_Ax_3-KWk5RGpiE0YubWjcW2A-bdQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-8 text-white">
+<span class="px-4 py-1.5 bg-primary-container text-on-primary-container rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block">Grand Celebration</span>
+<h1 class="text-4xl md:text-5xl font-serif font-bold leading-tight">Navaratri Golu &amp; Concert Series</h1>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">calendar_today</span>
+<p class="text-[10px] text-stone-500 uppercase tracking-widest font-bold">Date</p>
+<p class="text-sm font-semibold">Oct 15 - 24, 2024</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">schedule</span>
+<p class="text-[10px] text-stone-500 uppercase tracking-widest font-bold">Starts at</p>
+<p class="text-sm font-semibold">06:00 PM IST</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">location_on</span>
+<p class="text-[10px] text-stone-500 uppercase tracking-widest font-bold">Venue</p>
+<p class="text-sm font-semibold">Heritage Pavilion</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">hourglass_empty</span>
+<p class="text-[10px] text-stone-500 uppercase tracking-widest font-bold">Duration</p>
+<p class="text-sm font-semibold">4 Hours Daily</p>
+</div>
+</div>
+</div>
+<!-- Booking/Pass Sidebar -->
+<aside class="lg:col-span-5 flex flex-col gap-6">
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm border border-outline-variant/15 sticky top-28">
+<h3 class="text-2xl font-serif font-bold mb-6">Event Pass</h3>
+<div class="flex items-center justify-between mb-8 pb-6 border-b border-outline-variant/15">
+<div>
+<p class="text-sm text-stone-500 mb-1">Single Day Entry</p>
+<p class="text-3xl font-bold text-on-surface">₹1,250</p>
+</div>
+<div class="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-lg font-bold text-sm">
+                            Limited
+                        </div>
+</div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+                            Full access to Concert Hall
+                        </li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+                            Prasadam &amp; Evening Refreshments
+                        </li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+                            Digital Souvenir Kit
+                        </li>
+</ul>
+<button class="w-full py-5 rounded-2xl bg-gradient-to-br from-primary to-primary-container text-white font-bold uppercase tracking-widest text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mb-4">
+                        Get Entry Pass
+                    </button>
+<p class="text-[11px] text-center text-stone-400">View Official Ticket Link for Group Bookings</p>
+</div>
+</aside>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<div class="lg:col-span-7 space-y-12">
+<!-- Guide Section -->
+<section>
+<h2 class="text-3xl font-serif font-bold mb-8 flex items-center gap-3">
+                        How to Participate
+                        <div class="h-px flex-1 bg-outline-variant/20 ml-4"></div>
+</h2>
+<div class="space-y-0">
+<div class="relative pl-12 pb-10">
+<div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">1</div>
+<div class="absolute left-[15px] top-8 bottom-0 w-[2px] bg-outline-variant/15"></div>
+<h4 class="font-bold text-lg mb-2">Reporting Time</h4>
+<p class="text-stone-600 leading-relaxed">Please arrive at the West Gate by 05:30 PM. Late entries may have to wait for the ritual breaks to find seating.</p>
+</div>
+<div class="relative pl-12 pb-10">
+<div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">2</div>
+<div class="absolute left-[15px] top-8 bottom-0 w-[2px] bg-outline-variant/15"></div>
+<h4 class="font-bold text-lg mb-2">Materials Needed</h4>
+<p class="text-stone-600 leading-relaxed">Guests are encouraged to bring flowers (Jasmines or Roses) or small fruits for the offering. Please avoid plastic bags inside the pavilion.</p>
+</div>
+<div class="relative pl-12">
+<div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">3</div>
+<h4 class="font-bold text-lg mb-2">Attire Guide</h4>
+<p class="text-stone-600 leading-relaxed">Traditional ethnic wear is highly recommended for all participants to maintain the sanctity of the cultural space.</p>
+</div>
+</div>
+</section>
+<!-- Artists/Lineup -->
+<section>
+<div class="flex justify-between items-end mb-8">
+<h2 class="text-3xl font-serif font-bold">Artists Lineup</h2>
+<button class="text-primary font-bold text-sm underline decoration-primary-fixed-dim underline-offset-4">Full Schedule</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container-low p-6 rounded-3xl flex items-center gap-6 group hover:bg-surface-container-high transition-colors">
+<div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a classical Indian vocalist with traditional jewelry and attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt1aX1YEw9OHeYGiISC5qFf4-Hb9xpWE84m0H3mzCGEddNtPtlRAXV9ugqQVeli8rDk2WXHu1wsw6pYJUYfX1OaaHqdPAq_GCkb2-1m5I2nkOMfdePCjaVhxkmPvGf6z1JceQfYobSemcPCEGmF1vnoyaKLWbRoR-gRw8pcnujG0PEkHrGCSVxMZGYttbBXvFEYzXWhPzG-iLLJmUh26iKpcOPGCkxkBakLXfglUoaO7ljfITJCgUZEm7s6aKt9VpmTwzzMEgENc8"/>
+</div>
+<div>
+<p class="text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">Lead Vocalist</p>
+<h4 class="text-xl font-serif font-bold group-hover:text-primary transition-colors">Vidya Ramanathan</h4>
+<p class="text-sm text-stone-600">Carnatic Classical Legend</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-3xl flex items-center gap-6 group hover:bg-surface-container-high transition-colors">
+<div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="musician playing the Mridangam, a traditional Indian percussion instrument, focused expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfSIbFYEmBVzTUeoz8aowOa75u5VHV6Qo8nwRNfFHlyKN9m_kxkfJYqBcIMq4w02ec_aC7UZzdf24VcgeS8_4cGKxOVPEewqYhpYMsrQty7lJtkcXm1rq8hCXkDdCPNmC0in3p4LrSppLpWWXCt5co8KqO32T3ColktkvhE60mqGyR8XepNg6Ce29Yav1y0S75ZLtlbT3rFGM0hs2l126vG58DKbgonJ0DjEeBb3yA2NjvCgHUMoMiAro_Y12chwwwdTbsjWZnehM"/>
+</div>
+<div>
+<p class="text-[10px] text-stone-500 uppercase tracking-widest font-bold mb-1">Mridangam</p>
+<h4 class="text-xl font-serif font-bold group-hover:text-primary transition-colors">K. Vishwanathan</h4>
+<p class="text-sm text-stone-600">Master of Rhythm</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Community / Comments -->
+<div class="lg:col-span-5 space-y-8">
+<section class="bg-surface-container-low p-8 rounded-3xl">
+<h2 class="text-2xl font-serif font-bold mb-6 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">groups</span>
+                        Who else is attending
+                    </h2>
+<div class="flex -space-x-4 mb-6">
+<img class="w-12 h-12 rounded-full border-4 border-surface-container-low" data-alt="person face avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq5lo5c6NIhN6hdwewt9hsUo6FI04FieCOLJeQ0Z8mPjjTT4tV-Jr4nd2ewszXkwyoLeXvYzoCPjDvPTx3Wpe4RhoSeCtVFtCPdYe_6QkKvpDKNiqWW8QwPBnAsmHVXeNjJM1_MtT-H0ZWYStITgsqRDD9lo8jdO88Ayu--0oIyUL97_kW34fuDD_ORWJh_2xc8XjyfJox46vWkkrpVTLRkXOIu-PcUV_mjH7CEp9pG5Fz9p9SzFvzwM9oDyjA39ZaRownwrq-RKE"/>
+<img class="w-12 h-12 rounded-full border-4 border-surface-container-low" data-alt="person face avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdyU72Uq-EFOw-caFgppVF5zmEAk5q8H4B3AramLgHt-O9XCPkeqPUjBjFF2jIkpwh9ugRiPFHXQNrZ_iWmUjjekhLVapB_HawuFzl2KyeqEHiU_GOXMUvSxYDNIG2uUUbgi0buhNdWP33VNwKKzUYYyQ6NmIeM1qHTZ_r9m-ATTSNzHwrn9GREoAT6bHxI7sl_jjO7F3BdbQzqS8Qr1H78-kSxPyt7716hxo3IOjzya5tp1dwC9ZrajkkbY6Ut0QdIcIuLyjKWPQ"/>
+<img class="w-12 h-12 rounded-full border-4 border-surface-container-low" data-alt="person face avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsfNrQ60_j6uCjOxPi4ENPRDoqSLyKz0f6ZlvFsR7FbY6BlcnkkXOSszvoTbZ-qWZpNQmgrBlbIM4S8q9w6jF_mSiYJifQKKcKajWf22h8EqWC2JFpc4tM8v-s0GYeps10-UbC9eQfG4fV9679sdm9l6TjFj77Kw4vlTmvPMKQ0ilJVXNKlNPztRqncfQ002zKrxSEP2oT4EW0UWdvT9aWf5JZf6bZL0EgDOUBVTVAp9Pqt033iBF65QC0HbzaCEk79hSinoHcZoE"/>
+<img class="w-12 h-12 rounded-full border-4 border-surface-container-low" data-alt="person face avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlD_QltHSaidp_JReFQqfOpK2QlL4QvngJIFPj4BXUFUd3LHGbOhQ0ViwD4dVT_PUFGy8vJBcUFT9SNJVFqQ9VtyZo2AiwT1qAwV50G2BnoGZUOU2dq4VPUHdqbwShG_KkRSKylVSe5p4--QV2mKWE6DvL38amuQpcHoKsWqdTvgbTy2pvKpiWJIr-s_N0LhMhD-Ea336ZPqsx23CNbhaFGncetf2UtCeeoSGprdWRhsbKYRk7hZS048oycg0l_dejlFTJkcZGmo0"/>
+<div class="w-12 h-12 rounded-full border-4 border-surface-container-low bg-primary-fixed flex items-center justify-center text-xs font-bold text-on-primary-fixed">+82</div>
+</div>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="user profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDY3Xe4aeBtR0aFiIolAP7xOJeCYTqyry1zFmvDLRGr79YQxgAGhKDURZ4TEbLdDdBUp0HqzcH1WoFUdkuGMTjsBcrx_VrAREUWWpJsqza6SRpiF_O-EyZUrYnhjlPVOll3Dv9VxKKpT0ZA265AE8H3yxjuuphQXPqckp1W39A4-ikLCEqfb32mWhU9eVn6VBTxTylX39EG-aGj0wPX2Lh4Y9V2qd5wWOFQHhBW0T8sOntsltdSoh4wL0LgqvIf_4KS1YqGXfU7_0k"/>
+</div>
+<div class="flex-1">
+<div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm">
+<p class="font-bold text-sm mb-1">Arjun K.</p>
+<p class="text-sm text-stone-600">Can't wait for the violin solo on Day 3! Bringing my parents along too.</p>
+</div>
+<p class="text-[10px] text-stone-400 mt-2 ml-1">2 hours ago</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="user profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEl7yxthS2kbjPIR1Lq1vtuBrzkgb_OsfSiRi-qlt3319mRB9obUOu11VsnjZAVPS3N2a32bfqIVLV8xAyiaF4ZxEwePeXSOw5WiNMyue6WmlEmSEVoDRyx_5lVSeYxp-H2v24I1F_SfPOZxjpUuRREfA5cdkNCe8BdXrpmTjBt7-Cfnva4rJacrtt-X9KV4wAUmz0S0jgmiii83YaAQwWoZGYqLaHS66PUS5Er6WpbAX5kp2pwEROTfxEKc6XufsHrZrUcEDuegE"/>
+</div>
+<div class="flex-1">
+<div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm">
+<p class="font-bold text-sm mb-1">Sanjana Rao</p>
+<p class="text-sm text-stone-600">The Golu arrangements last year were ethereal. Looking forward to this year's theme.</p>
+</div>
+<p class="text-[10px] text-stone-400 mt-2 ml-1">5 hours ago</p>
+</div>
+</div>
+</div>
+<div class="mt-8 flex gap-3">
+<input class="flex-1 bg-white border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-primary-fixed transition-all placeholder:text-stone-400" placeholder="Share your excitement..." type="text"/>
+<button class="bg-primary text-white p-3 rounded-2xl shadow-md active:scale-90 transition-transform">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#faf9f6]/80 dark:bg-stone-900/80 backdrop-blur-md z-50 rounded-t-[1.5rem] shadow-[0_-12px_32px_rgba(26,28,26,0.06)]">
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] dark:hover:text-[#ff9768] transition-all" href="#">
+<span class="material-symbols-outlined">home_max</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#ffdbcd] dark:bg-[#a14009]/30 text-[#a14009] dark:text-[#ff9768] rounded-2xl px-5 py-2 Active: scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1 font-bold">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] dark:hover:text-[#ff9768] transition-all" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">AI Assistant</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] dark:hover:text-[#ff9768] transition-all" href="#">
+<span class="material-symbols-outlined">person_celebrate</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

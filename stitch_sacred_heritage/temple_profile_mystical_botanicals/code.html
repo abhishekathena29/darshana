@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#241a00",
+                        "outline-variant": "rgba(219, 194, 176, 0.2)",
+                        "surface-dim": "#080c0d",
+                        "on-tertiary-container": "#ffdcc8",
+                        "surface-variant": "rgba(45, 55, 60, 0.4)",
+                        "secondary-fixed-dim": "#e9c349",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#93000a",
+                        "secondary-container": "#745c00",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#321200",
+                        "primary": "#ff9768",
+                        "primary-fixed-dim": "#ffb596",
+                        "on-primary-container": "#ffdbcd",
+                        "tertiary-fixed": "#ffdbc9",
+                        "on-secondary-container": "#ffe088",
+                        "surface-container-highest": "#1a2529",
+                        "background": "#050a0b",
+                        "inverse-surface": "#faf9f6",
+                        "surface-container-low": "rgba(10, 20, 22, 0.7)",
+                        "surface-container-high": "rgba(20, 32, 35, 0.8)",
+                        "tertiary-fixed-dim": "#ffb68c",
+                        "on-primary-fixed": "#360f00",
+                        "on-surface-variant": "#dbc2b0",
+                        "surface-tint": "#ff9768",
+                        "on-primary": "#4e1a00",
+                        "on-secondary": "#3a2e00",
+                        "on-tertiary-fixed-variant": "#753401",
+                        "primary-container": "#7d2d00",
+                        "surface-container-lowest": "rgba(5, 8, 10, 0.9)",
+                        "error": "#ffb4ab",
+                        "surface": "#050a0b",
+                        "inverse-on-surface": "#1a1c1a",
+                        "secondary-fixed": "#ffe088",
+                        "surface-container": "rgba(15, 25, 28, 0.75)",
+                        "primary-fixed": "#ffdbcd",
+                        "secondary": "#fed65b",
+                        "tertiary-container": "#713200",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#a14009",
+                        "surface-bright": "#121d21",
+                        "on-background": "#f1e3d8",
+                        "on-surface": "#f1e3d8",
+                        "outline": "#a08d81",
+                        "tertiary": "#ffb68c",
+                        "inverse-primary": "#a14009",
+                        "on-secondary-fixed-variant": "#574500",
+                        "ivory": "#fdf8e1",
+                        "gold": "#d4af37"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "serif": ["Noto Serif"],
+                        "sans": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+::-webkit-scrollbar {
+    display: none
+    }
+.glass-nav {
+    background: rgba(5, 10, 11, 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px)
+    }
+.glass-card {
+    background: rgba(15, 25, 28, 0.65);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.08)
+    }
+.mystical-bg {
+    background-color: #050a0b;
+    background-image: radial-gradient(circle at 10% 20%, rgba(20, 80, 70, 0.2) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(161, 64, 9, 0.15) 0%, transparent 50%), url(https://lh3.googleusercontent.com/aida-public/AB6AXuBIKD98oVys5kTWdiwkrUqxiP-b0FqjMbjDHLdfY8shjMA0j_zWkjSvSHcErot7b7cGa83X0jYbhp_38cK6sn-31JGXmCk3WhpGSTMtV9nCAhLylgPjyrUMTn8MUvKfJY2u_UIjDBYe_FesKAd89yI1CkJLyLly0XOqyv4XebVfEp1SbbmUYpsQlrypQDuicp9dpYlS8_Y5w0p3MkZ3exStdwHMXodGDWjgOuHmTvjgPZIj7vIiL1lKlaivBOdNSe7f7XWt67I7tA0), radial-gradient(circle at 50% 50%, rgba(10, 40, 45, 0.4) 0%, transparent 100%);
+    background-attachment: fixed;
+    background-blend-mode: overlay, normal, multiply, normal
+    }
+/* Subtle Divine Silhouette Overlay */
+.mystical-bg::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCt2RMtnyLdBUj8-SbGYattVIny6lpb1Bcvl4_Erx9FUSjKSTrge11fFHecGfyom9TpCvNqfI7KtoUDZICJIOPRx1WN-kGfPFSrsiIha0-RBfA5UQCDfwHbaKU_bEgHeqDb0y_iIsNaud-o3JeNb_ZvAgsPARhUlSV4ssLBpU63uQ1ffXkIXVchGh-dW8wXy0QgWjtw4csFnlP4uQsAo5rEiWjrxzFr4Gw3jkK8icvrsiHpUwbAmXgk6lunheLbQv3t4a4aJJ0BRfY);
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: -1
+    }
+.glow-teal {
+    box-shadow: 0 0 50px -12px rgba(20, 120, 100, 0.25)
+    }
+.glow-orange {
+    box-shadow: 0 0 50px -12px rgba(255, 151, 104, 0.15)
+    }</style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="mystical-bg text-on-surface font-sans antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 glass-nav border-b border-white/5 flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-primary hover:bg-white/5 p-2 rounded-full transition-colors active:scale-90">arrow_back</button>
+<span class="text-2xl font-serif italic text-primary">Sudarshan</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary hover:bg-white/5 p-2 rounded-full transition-colors">notifications</span>
+<div class="w-10 h-10 rounded-full ring-2 ring-primary/20 overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a serene man with a soft smile and professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBZXGls2w8mKonx4hlXsbhV3uwvoUDg494ZpJ2TkvU8IUti_Nr11dqEA5atHdthVX2wfG2utwpiwd5E1nxnqyTyWdcYSVmJp-K74Kf1RXIDNnoQ7MY9lutllvNoLrb78r_CutnqroxKakHM1cUT9WB2cE5dFZ2-yOSSQAWgMyOK4RPLcCGAzIW6FQTtIiFO0uP11lS72L2HC36lfjYr-kYTIXVhyGBArQeeryceLK0Ng7eVQF-AYxE5rI13_krFX5DISc0R62KSUc"/>
+</div>
+</div>
+</header>
+<main class="pb-32">
+<!-- Hero Section -->
+<section class="relative h-[530px] w-full overflow-hidden">
+<img alt="Temple" class="w-full h-full object-cover" data-alt="majestic ancient stone temple architecture at sunrise with intricate carvings and golden light illuminating the facade" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEIysNsnaCmGG66ptZVYbNLQMpvUp5Rum0BtwLES3_dAy33tJgiO0JXyEKzzHQDOla1LInCvpJpMtPUPgAzZAE5jaba3OmZ8fUfIN1MazcsbiOYwXODxXiqOqcNe9HbKkNFjMkCMquR8D82CyVA4dJmPuXXDtWwQOLfu15Xn9v5l4nXV-MfcL3YjBcFpFDUp-V7UH8p1aQ6juOzICo9s59WUz11ETiUF-KB5u_iGawT92gBWlTCPqCJUCl-EOAjsmTqEtxyTSgYO4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
+<div class="absolute bottom-12 left-6 right-6">
+<p class="font-serif text-primary italic text-lg mb-1 drop-shadow-md">Presiding Deity: Lord Venkateswara</p>
+<h1 class="font-serif text-4xl md:text-6xl text-ivory font-bold leading-tight drop-shadow-lg">Sri Padmavathi Amman Temple</h1>
+</div>
+</section>
+<!-- Key Info Bar -->
+<section class="px-6 -mt-10 relative z-10">
+<div class="glass-card shadow-2xl rounded-2xl grid grid-cols-3 p-6 text-center glow-teal">
+<div class="flex flex-col items-center gap-2 border-r border-white/10 px-2">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<span class="text-[10px] uppercase tracking-widest text-primary/70 font-bold">Timings</span>
+<p class="text-sm font-semibold text-ivory">5:30 AM - 9:00 PM</p>
+</div>
+<div class="flex flex-col items-center gap-2 border-r border-white/10 px-2">
+<span class="material-symbols-outlined text-primary">apparel</span>
+<span class="text-[10px] uppercase tracking-widest text-primary/70 font-bold">Dress Code</span>
+<p class="text-sm font-semibold text-ivory">Traditional Only</p>
+</div>
+<div class="flex flex-col items-center gap-2 px-2">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<span class="text-[10px] uppercase tracking-widest text-primary/70 font-bold">Location</span>
+<p class="text-sm font-semibold text-ivory">Tiruchanur</p>
+</div>
+</div>
+</section>
+<!-- Dynamic Content Tabs Area -->
+<section class="px-6 mt-12">
+<div class="flex gap-8 overflow-x-auto pb-4 mb-8 no-scrollbar">
+<button class="text-primary font-bold border-b-2 border-primary pb-2 whitespace-nowrap">Significance</button>
+<button class="text-on-surface-variant font-medium pb-2 whitespace-nowrap hover:text-primary transition-colors">Pooja Schedule</button>
+<button class="text-on-surface-variant font-medium pb-2 whitespace-nowrap hover:text-primary transition-colors">Seva &amp; Offerings</button>
+<button class="text-on-surface-variant font-medium pb-2 whitespace-nowrap hover:text-primary transition-colors">History</button>
+</div>
+<!-- Bento Content Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Significance & History -->
+<div class="md:col-span-2 glass-card rounded-2xl p-8 glow-orange">
+<h2 class="font-serif text-2xl text-primary mb-4">Divine Significance</h2>
+<p class="text-on-surface-variant leading-relaxed text-lg mb-6">
+                        The temple is dedicated to Goddess Padmavathi, the consort of Lord Venkateswara. Legend has it that she manifested in a golden lotus within the temple tank. Pilgrims traditionally visit this sacred site before proceeding to Tirumala.
+                    </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white/5 p-4 rounded-xl border border-white/5">
+<h4 class="font-bold text-xs uppercase tracking-tighter text-primary mb-2">History</h4>
+<p class="text-sm text-on-surface/80">Ancient structures dating back to the Pallava era, reflecting Dravidian architectural mastery.</p>
+</div>
+<div class="bg-white/5 p-4 rounded-xl border border-white/5">
+<h4 class="font-bold text-xs uppercase tracking-tighter text-primary mb-2">Architecture</h4>
+<p class="text-sm text-on-surface/80">Intricate stone carvings and a magnificent seven-tier Rajagopuram facing the sunrise.</p>
+</div>
+</div>
+</div>
+<!-- Cultural Context / Tips -->
+<div class="bg-gradient-to-br from-[#1a2f2c] to-[#0a1a18] border border-white/10 backdrop-blur-md text-on-primary rounded-2xl p-8 relative overflow-hidden flex flex-col justify-between shadow-xl">
+<span class="material-symbols-outlined text-white/5 absolute -right-4 -top-4 text-9xl">temple_hindu</span>
+<div class="relative z-10">
+<h3 class="font-serif text-xl mb-4 text-gold">Pro-Tips</h3>
+<ul class="space-y-4">
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-gold text-sm pt-1">check_circle</span>
+<span class="text-sm text-ivory/90">Carry a reusable water bottle; hydration points are available.</span>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-gold text-sm pt-1">block</span>
+<span class="text-sm text-ivory/90">Photography is strictly prohibited inside the sanctum.</span>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-gold text-sm pt-1">footprint</span>
+<span class="text-sm text-ivory/90">Shoe counters are free and located at the South entrance.</span>
+</li>
+</ul>
+</div>
+<div class="mt-8 pt-6 border-t border-white/10 relative z-10">
+<p class="text-xs font-medium uppercase tracking-widest opacity-70 text-gold">Official Portal</p>
+<p class="text-sm font-serif text-ivory">tirumala.org</p>
+</div>
+</div>
+<!-- Facilities -->
+<div class="md:col-span-3 glass-card rounded-2xl p-8">
+<h3 class="font-serif text-xl mb-6 text-ivory">Pilgrim Amenities</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined">accessible</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-primary/60">Access</p>
+<p class="font-semibold text-ivory">Ramp &amp; Lift</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined">local_parking</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-primary/60">Parking</p>
+<p class="font-semibold text-ivory">Secured Lot</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-primary/60">Food</p>
+<p class="font-semibold text-ivory">Annaprasadam</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined">wifi</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-primary/60">Digital</p>
+<p class="font-semibold text-ivory">Public WiFi</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Call -->
+<div class="fixed bottom-24 left-6 right-6 z-40 md:left-auto md:right-12 md:bottom-12 md:w-80">
+<button class="w-full h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold uppercase tracking-[0.1em] shadow-2xl shadow-primary/40 flex items-center justify-center gap-3 active:scale-95 transition-transform border border-white/20">
+<span class="material-symbols-outlined">confirmation_number</span>
+            Book Darshan / Seva
+        </button>
+<p class="text-[10px] text-center mt-2 text-primary/60 font-medium">Redirecting to official TTD booking portal</p>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 glass-nav rounded-t-[2rem] z-50 border-t border-white/5 shadow-[0_-12px_40px_rgba(0,0,0,0.6)]">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-2 hover:text-primary transition-all">
+<span class="material-symbols-outlined">home_max</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-2xl px-5 py-2 active:scale-95 duration-200 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Events</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-2 hover:text-primary transition-all">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">AI Assistant</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-2 hover:text-primary transition-all">
+<span class="material-symbols-outlined">person_celebrate</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Profile</span>
+</div>
+</nav>
+</body></html>

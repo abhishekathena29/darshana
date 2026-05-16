@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#713200",
+                    "on-error": "#ffffff",
+                    "tertiary": "#934b19",
+                    "surface-dim": "#dbdad7",
+                    "on-surface-variant": "#554336",
+                    "secondary-container": "#fed65b",
+                    "primary": "#a14009",
+                    "on-tertiary-fixed-variant": "#753401",
+                    "on-surface": "#1a1c1a",
+                    "surface-container-low": "#f4f3f1",
+                    "inverse-surface": "#2f312f",
+                    "secondary-fixed": "#ffe088",
+                    "background": "#faf9f6",
+                    "secondary": "#735c00",
+                    "primary-fixed": "#ffdbcd",
+                    "tertiary-fixed-dim": "#ffb68c",
+                    "surface": "#faf9f6",
+                    "secondary-fixed-dim": "#e9c349",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e9e8e5",
+                    "surface-bright": "#faf9f6",
+                    "on-primary-fixed-variant": "#7d2d00",
+                    "surface-variant": "#e3e2e0",
+                    "on-secondary-fixed-variant": "#574500",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "on-background": "#1a1c1a",
+                    "outline": "#887364",
+                    "tertiary-container": "#f79b62",
+                    "surface-tint": "#a14009",
+                    "tertiary-fixed": "#ffdbc9",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#ffb596",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#321200",
+                    "on-secondary-container": "#745c00",
+                    "on-primary-container": "#792b00",
+                    "on-secondary-fixed": "#241a00",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#f2f1ee",
+                    "inverse-primary": "#ffb596",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#efeeeb",
+                    "outline-variant": "#dbc2b0",
+                    "surface-container-highest": "#e3e2e0",
+                    "on-primary-fixed": "#360f00",
+                    "primary-container": "#ff9768"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface min-h-screen pb-32">
+<!-- TopAppBar Section -->
+<header class="bg-stone-50/80 dark:bg-stone-900/80 backdrop-blur-md fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-orange-800 dark:text-orange-400 cursor-pointer" data-icon="menu">menu</span>
+<h1 class="text-2xl font-serif italic text-orange-900 dark:text-orange-200">Sanctuary</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/15">
+<img alt="Profile picture" class="w-full h-full object-cover" data-alt="portrait of a serene woman with a warm expression in soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl3pXYIlih--dEH6zYitCOIkIgytNjlWDOfeclLGRtypaPdr7a-AmqrEULjZXv90LU6XoSB1NTev5_LwvPwtvCIJeW-FZLkTUDvTE3SV9_JFMXHBPKkTT6AvybNppK_EY1-srYJKwNMqp8UHeEnF28pe-0DIh9IlZzBk98VOi0v3m1vz7FupmxBu8SMC6EljBuK34EZauz40mELa-BTHPB7u41FuEjfoDjG10MHXFDs2D-eI1UTU-OQK6Qn7cVVO1zS27n3wk6Keg"/>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-7xl mx-auto">
+<!-- Hero Search Section -->
+<section class="mb-12">
+<h2 class="font-headline text-4xl md:text-5xl text-on-surface mb-6 leading-tight max-w-2xl">Discover Sacred Gatherings &amp; Cultural Festivals</h2>
+<div class="relative group max-w-xl">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+</div>
+<input class="w-full bg-surface-container-highest border-none rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary-fixed transition-all placeholder:text-outline/60 text-lg" placeholder="Search events, poojas, or sites..." type="text"/>
+</div>
+</section>
+<!-- Category Horizontal Scroll -->
+<section class="mb-10 -mx-6 px-6 overflow-x-auto no-scrollbar flex gap-3">
+<button class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-medium text-sm whitespace-nowrap shadow-sm">All Events</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-sm whitespace-nowrap">Poojas</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-sm whitespace-nowrap">Festivals</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-sm whitespace-nowrap">Music</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-sm whitespace-nowrap">Dance</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high transition-colors font-medium text-sm whitespace-nowrap">Tours</button>
+</section>
+<!-- Featured Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-16">
+<!-- Large Featured Card -->
+<div class="md:col-span-8 group relative overflow-hidden rounded-[1.5rem] h-[500px] bg-surface-container-low">
+<img alt="Grand Festival" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="magnificent aerial view of an ancient temple lit by thousands of oil lamps during a night festival with deep orange glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdfhQvhLaA6RCxWiMBr5WGMj45NMtcXqh5pCqRAbDUwP82kWQOdBKvuGuVH-17ofDfeBL5xkHxSC2tVdHI4-kV9vuAIZjpJRq5v9PQ30dMZdu5G2qJouof4ozjEsMKBi4nRIWujx1YN4kUzCKDIgLg8yLx23henCcOjssPwd5RaFCxUmowLuGjiWYqSM0HdwcGy2zerbjscMUvNy6zuNdLEXWkB_TL8D-scncSf0JnI3MKjah47UjAgSiRoTU2DRoK9ob667-h5Ro"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/20 to-transparent"></div>
+<div class="absolute bottom-0 p-8 w-full">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-orange-600 text-white text-xs font-bold tracking-widest uppercase mb-4">
+<span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Live Now
+                    </span>
+<h3 class="font-headline text-3xl md:text-4xl text-surface mb-3">Maha Shivratri Celebration 2024</h3>
+<div class="flex flex-wrap items-center gap-6 text-surface-variant font-light">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-sm">Tonight, 6:00 PM</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+<span class="text-sm">Varanasi Ghats, India</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Featured Items -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="flex-1 bg-surface-container-lowest rounded-[1.5rem] p-6 flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all">
+<div>
+<span class="text-primary text-[11px] font-bold tracking-widest uppercase mb-2 block">Spiritual Music</span>
+<h4 class="font-headline text-xl text-on-surface group-hover:text-primary transition-colors">Evening Raga &amp; Meditation</h4>
+</div>
+<div class="mt-4">
+<p class="text-on-surface-variant text-sm line-clamp-2 font-light mb-4">A soul-stirring performance by maestros in the heart of the sacred valley.</p>
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-outline uppercase tracking-wider">March 12 • 5 PM</span>
+<span class="material-symbols-outlined text-primary" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest rounded-[1.5rem] p-6 flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all border border-outline-variant/5">
+<div>
+<span class="text-tertiary text-[11px] font-bold tracking-widest uppercase mb-2 block">Cultural Tour</span>
+<h4 class="font-headline text-xl text-on-surface group-hover:text-primary transition-colors">Temple Heritage Walk</h4>
+</div>
+<div class="mt-4">
+<div class="inline-flex px-2 py-0.5 rounded bg-error-container text-on-error-container text-[10px] font-bold uppercase mb-3">Limited Spots</div>
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-outline uppercase tracking-wider">March 15 • 7 AM</span>
+<span class="material-symbols-outlined text-primary" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Asymmetric Masonry List -->
+<h3 class="font-headline text-2xl text-on-surface mb-8">Upcoming Events</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Event Card 1 -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-[1.5rem] mb-4 relative bg-surface-container-low">
+<img alt="Ganga Aarti" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="ritual lamps being held by priests at the banks of a river with beautiful bokeh of city lights in the background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTCs4Ew6tFzt1nRh-5bq9svMtGid7nJ2_Rw56gsMjte8ZY3Ing4kAqlgIjCqO_TJlIuW2zjhPyg4DZOdJNhBlK9W0bqybuec55zfoJCCSsMMiTJZ5Ek_BAB2MOrjukoRemRLT7tIHMQZvrBKvphSxdVhEHJRWMZxN5DtOs1gTSYt7HiyyfkfuqukO-MFeJgP65ru7vaEv5HSF_Y40nmrEEUZLXiWNv2JiLqC1glFI7sEpPvK7w3_Pt-Q2pbM2Yh7tIhsXx0fikVVM"/>
+<div class="absolute top-4 left-4 bg-surface/90 backdrop-blur-md rounded-lg px-3 py-1 text-center">
+<span class="block text-xs font-bold uppercase text-primary">Mar</span>
+<span class="block text-lg font-headline text-on-surface leading-none">18</span>
+</div>
+</div>
+<h4 class="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">Vedic Chanting Workshop</h4>
+<div class="flex items-center gap-2 mt-1 text-outline text-sm">
+<span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span>
+<span>10:00 AM - 1:00 PM</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 text-outline text-sm">
+<span class="material-symbols-outlined text-xs" data-icon="location_on">location_on</span>
+<span>The Lotus Center, Rishikesh</span>
+</div>
+</div>
+<!-- Event Card 2 -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-[1.5rem] mb-4 relative bg-surface-container-low">
+<img alt="Kathak Dance" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="classical dancer in traditional indian attire with vibrant colors performing on a dark wooden stage with dramatic spotlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVbeTpQTeUaCuTOLpBM9uiIsYagvcNLEXOz6-s6YBtnCKLKdgStonN5ZuOLYW-wA1-2hcuH5GVOhL7BJI6Rbdy4wGifVCcQB91-T_8nKyrpTw1w2U-WeOKoyHzGRLSTn5wNLbgpvptkDwdBRXoT9O3dGA4BInOGaCMMJ3D6TzIs2xU0wcFfG6jPucqhJivkeUXufeJBY4w8t37kCJsOF89fhgNs5pxmqxgLS7qcG37my_Q_wKiMSjZt_UX33mFzpHvf-hXCrmUbI0"/>
+<div class="absolute top-4 left-4 bg-surface/90 backdrop-blur-md rounded-lg px-3 py-1 text-center">
+<span class="block text-xs font-bold uppercase text-primary">Mar</span>
+<span class="block text-lg font-headline text-on-surface leading-none">22</span>
+</div>
+</div>
+<h4 class="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">Spring Kathak Recital</h4>
+<div class="flex items-center gap-2 mt-1 text-outline text-sm">
+<span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span>
+<span>07:30 PM Onwards</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 text-outline text-sm">
+<span class="material-symbols-outlined text-xs" data-icon="location_on">location_on</span>
+<span>Royal Opera House</span>
+</div>
+</div>
+<!-- Event Card 3 -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-[1.5rem] mb-4 relative bg-surface-container-low">
+<img alt="Pooja" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="close up of colorful flower offerings and incense in a traditional hindu pooja ceremony with warm soft morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ-trqgjaEbqIsoQ-OcuSVuvJvmvu-j3z4EyuIAdCvstBY7KEe-LNW_-3A6abxJOqk9dCwFprdOynMKV0_snDq2MvFGx1wQxUmABVNKesSd0igExXJRvsqsaMoWz44W04Y10R4jjjfV7679NiAfSmuqgzoLp4sINEBndyclc1yu66vbjjhaR-bXoaN6jv7mnrshSYu2zFTYnKUxP9Smh1H6vdtypurfNJ0NO6SUAYk1wQdv_Pg4VwQSXcvC-r5-lClGGzIDRAqW1w"/>
+<div class="absolute top-4 left-4 bg-surface/90 backdrop-blur-md rounded-lg px-3 py-1 text-center">
+<span class="block text-xs font-bold uppercase text-primary">Mar</span>
+<span class="block text-lg font-headline text-on-surface leading-none">25</span>
+</div>
+</div>
+<h4 class="font-headline text-lg text-on-surface group-hover:text-primary transition-colors">Saraswati Puja Gathering</h4>
+<div class="flex items-center gap-2 mt-1 text-outline text-sm">
+<span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span>
+<span>09:00 AM Daily</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5 text-outline text-sm">
+<span class="material-symbols-outlined text-xs" data-icon="location_on">location_on</span>
+<span>Community Hall, South Extension</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Navigation Components -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-xl z-50 rounded-t-3xl shadow-[0_-12px_32px_rgba(26,28,26,0.06)]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-orange-600 transition-colors scale-90 active:scale-100 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="temple_hindu">temple_hindu</span>
+<span class="font-manrope text-[11px] tracking-wider uppercase">Home</span>
+</a>
+<!-- Events (Active) -->
+<a class="flex flex-col items-center justify-center text-orange-800 dark:text-orange-300 bg-orange-100/50 dark:bg-orange-900/30 rounded-xl px-4 py-1 scale-90 active:scale-100 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="event_note" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="font-manrope text-[11px] tracking-wider uppercase">Events</span>
+</a>
+<!-- Journal -->
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-orange-600 transition-colors scale-90 active:scale-100 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="menu_book">menu_book</span>
+<span class="font-manrope text-[11px] tracking-wider uppercase">Journal</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-orange-600 transition-colors scale-90 active:scale-100 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-manrope text-[11px] tracking-wider uppercase">Profile</span>
+</a>
+</nav>
+</body></html>

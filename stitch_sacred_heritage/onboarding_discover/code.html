@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sanctuary - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-tertiary-container": "#713200",
+                "on-error": "#ffffff",
+                "tertiary": "#934b19",
+                "surface-dim": "#dbdad7",
+                "on-surface-variant": "#554336",
+                "secondary-container": "#fed65b",
+                "primary": "#a14009",
+                "on-tertiary-fixed-variant": "#753401",
+                "on-surface": "#1a1c1a",
+                "surface-container-low": "#f4f3f1",
+                "inverse-surface": "#2f312f",
+                "secondary-fixed": "#ffe088",
+                "background": "#faf9f6",
+                "secondary": "#735c00",
+                "primary-fixed": "#ffdbcd",
+                "tertiary-fixed-dim": "#ffb68c",
+                "surface": "#faf9f6",
+                "secondary-fixed-dim": "#e9c349",
+                "error-container": "#ffdad6",
+                "surface-container-high": "#e9e8e5",
+                "surface-bright": "#faf9f6",
+                "on-primary-fixed-variant": "#7d2d00",
+                "surface-variant": "#e3e2e0",
+                "on-secondary-fixed-variant": "#574500",
+                "on-error-container": "#93000a",
+                "error": "#ba1a1a",
+                "on-background": "#1a1c1a",
+                "outline": "#887364",
+                "tertiary-container": "#f79b62",
+                "surface-tint": "#a14009",
+                "tertiary-fixed": "#ffdbc9",
+                "surface-container-lowest": "#ffffff",
+                "primary-fixed-dim": "#ffb596",
+                "on-primary": "#ffffff",
+                "on-tertiary-fixed": "#321200",
+                "on-secondary-container": "#745c00",
+                "on-primary-container": "#792b00",
+                "on-secondary-fixed": "#241a00",
+                "on-tertiary": "#ffffff",
+                "inverse-on-surface": "#f2f1ee",
+                "inverse-primary": "#ffb596",
+                "on-secondary": "#ffffff",
+                "surface-container": "#efeeeb",
+                "outline-variant": "#dbc2b0",
+                "surface-container-highest": "#e3e2e0",
+                "on-primary-fixed": "#360f00",
+                "primary-container": "#ff9768"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "2xl": "1rem",
+                "3xl": "1.5rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Noto Serif"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-gradient-overlay {
+            background: linear-gradient(to bottom, rgba(250, 249, 246, 0) 0%, rgba(250, 249, 246, 0.8) 70%, rgba(250, 249, 246, 1) 100%);
+        }
+        .cta-gradient {
+            background: linear-gradient(135deg, #a14009 0%, #ff9768 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col overflow-hidden">
+<!-- Top Navigation Suppression (As per Shell Visibility Rule for Onboarding) -->
+<main class="flex-grow flex flex-col relative">
+<!-- Hero Section: Editorial Asymmetry -->
+<section class="relative h-[530px] w-full overflow-hidden">
+<img alt="Ancient stone temple at sunrise" class="w-full h-full object-cover" data-alt="Close-up of intricate stone carvings on an ancient Indian temple at dawn with soft golden light hitting the textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbP7jM-e7-ujGQJvIsJM25AJpvxPSxuxEZwl6nHM3L9soC6qtIMOLPdzCG_-ucOaaW96-dIhTwq_2P4n9xWT9eXClhZ6H-r0kgyBCAVih5-syKf8C38Fw_zAGL11Rk37Lqab-uWqMBNOn-dHdVNmGcUwcgQXkSTyn2XY1ux7U3_mEPZAROPTsrklbOi3Qi7SVOCXbG60CAqNVh0MlaW6peT0VuJ0ZW4oJJVS162rMwFKx-qTrL9JYG4wy05dSRgG8nHHGFfdfPFAs"/>
+<div class="absolute inset-0 editorial-gradient-overlay"></div>
+<!-- Floating Branding -->
+<div class="absolute top-12 left-8">
+<span class="text-orange-900 dark:text-orange-200 text-2xl font-headline italic tracking-tight">Sanctuary</span>
+</div>
+</section>
+<!-- Content Canvas: Digital Sanctuary -->
+<section class="flex-grow px-8 -mt-20 relative z-10 flex flex-col justify-between pb-12">
+<div class="space-y-6">
+<!-- Step Indicator -->
+<div class="flex items-center gap-2">
+<div class="h-1 w-8 rounded-full bg-primary"></div>
+<div class="h-1 w-2 rounded-full bg-outline-variant/30"></div>
+<div class="h-1 w-2 rounded-full bg-outline-variant/30"></div>
+<span class="ml-2 text-xs font-label uppercase tracking-[0.15em] text-outline">Step 01 / 03</span>
+</div>
+<!-- Headline: Noto Serif -->
+<h1 class="font-headline text-4xl md:text-5xl text-on-surface leading-tight max-w-[80%]">
+                    Discover Sacred <span class="italic text-primary">Sanctuaries</span>
+</h1>
+<!-- Body Text: Manrope -->
+<p class="font-body text-lg text-on-surface-variant leading-relaxed max-w-md">
+                    Explore the living history of timeless monuments. Uncover hidden traditions, precise ritual timings, and the architectural wonders of the ancient world.
+                </p>
+<!-- Features: Minimalist Cards (No Borders) -->
+<div class="grid grid-cols-2 gap-4 pt-4">
+<div class="bg-surface-container-low p-4 rounded-2xl flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">history_edu</span>
+<span class="text-sm font-medium">History</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">schedule</span>
+<span class="text-sm font-medium">Timings</span>
+</div>
+</div>
+</div>
+<!-- Interaction Layer -->
+<div class="mt-12 space-y-4">
+<button class="w-full cta-gradient text-on-primary py-5 rounded-2xl font-label text-sm font-bold uppercase tracking-widest shadow-xl shadow-primary/10 flex justify-center items-center group transition-all active:scale-95 duration-200">
+                    Next
+                    <span class="material-symbols-outlined ml-2 transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+<button class="w-full py-3 text-outline font-label text-sm uppercase tracking-widest hover:text-primary transition-colors">
+                    Skip Introduction
+                </button>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Suppression (As per Shell Visibility Rule for Onboarding) -->
+</body></html>

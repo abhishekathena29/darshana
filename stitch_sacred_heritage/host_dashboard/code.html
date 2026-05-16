@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#241a00",
+                        "outline-variant": "#dbc2b0",
+                        "surface-dim": "#dbdad7",
+                        "on-tertiary-container": "#713200",
+                        "surface-variant": "#e3e2e0",
+                        "secondary-fixed-dim": "#e9c349",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#fed65b",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#321200",
+                        "primary": "#a14009",
+                        "primary-fixed-dim": "#ffb596",
+                        "on-primary-container": "#792b00",
+                        "tertiary-fixed": "#ffdbc9",
+                        "on-secondary-container": "#745c00",
+                        "surface-container-highest": "#e3e2e0",
+                        "background": "#faf9f6",
+                        "inverse-surface": "#2f312f",
+                        "surface-container-low": "#f4f3f1",
+                        "surface-container-high": "#e9e8e5",
+                        "tertiary-fixed-dim": "#ffb68c",
+                        "on-primary-fixed": "#360f00",
+                        "on-surface-variant": "#554336",
+                        "surface-tint": "#a14009",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#753401",
+                        "primary-container": "#ff9768",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface": "#faf9f6",
+                        "inverse-on-surface": "#f2f1ee",
+                        "secondary-fixed": "#ffe088",
+                        "surface-container": "#efeeeb",
+                        "primary-fixed": "#ffdbcd",
+                        "secondary": "#735c00",
+                        "tertiary-container": "#f79b62",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#7d2d00",
+                        "surface-bright": "#faf9f6",
+                        "on-background": "#1a1c1a",
+                        "on-surface": "#1a1c1a",
+                        "outline": "#887364",
+                        "tertiary": "#934b19",
+                        "inverse-primary": "#ffb596",
+                        "on-secondary-fixed-variant": "#574500"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "serif": ["Noto Serif", "serif"],
+                        "sans": ["Manrope", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar Shell -->
+<header class="bg-[#faf9f6]/80 dark:bg-stone-900/80 backdrop-blur-md sticky top-0 z-50 shadow-sm shadow-stone-200/50 flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-primary-fixed flex items-center justify-center">
+<img alt="Organizer Profile" class="w-full h-full object-cover" data-alt="Portrait of a smiling middle-aged man in traditional linen attire, warm lighting, soft editorial background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6RoABzKAXFwdQuKWIFXaEQFb7HErz8dIkIo28MAzVRSpgVMCYWpOm3w51R2W12Hnt6lRjLhLpCADtoJuF1goSVJOanqIN24I3DsZPKxjN3IYjVafDP1yCfygmlFNMvtQ30D3OYlq5Q4ZLUaqZLfdMtIh1owTIlcr5Wip8XSIFdHQzKJ0vEic7DMh8V8O9wHx7u0sbLg7c8eu6S-dhDVMoqJyv71t0J_ZkBFeGOrB4CzcixQteEpCUre10MPb5xTJBTtqwkCGak-8"/>
+</div>
+<span class="text-2xl font-serif italic text-[#a14009] dark:text-[#ff9768]">Sudarshan</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-stone-100 transition-colors duration-300 scale-95 active:scale-90 text-stone-500">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-stone-100 transition-colors duration-300 scale-95 active:scale-90 text-[#a14009] relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<!-- Header Section -->
+<div class="mb-10">
+<h1 class="text-4xl font-serif font-bold text-on-surface mb-2">Organizer Dashboard</h1>
+<p class="text-on-surface-variant font-sans tracking-wide">Welcome back, Temple Administrator. Here is your community overview.</p>
+</div>
+<!-- Quick Stats: Asymmetric Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- Main Stat -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-2xl p-8 flex flex-col justify-between shadow-sm border border-outline-variant/15">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-xs font-sans uppercase tracking-[0.2em] text-primary font-bold">Total Registrations</span>
+<h2 class="text-5xl font-serif font-bold mt-2">1,284</h2>
+</div>
+<div class="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +12%
+                    </div>
+</div>
+<div class="mt-8 h-32 w-full flex items-end gap-1">
+<!-- Simple CSS Graph Representation -->
+<div class="flex-1 bg-primary-container/20 rounded-t-lg h-[40%]"></div>
+<div class="flex-1 bg-primary-container/20 rounded-t-lg h-[60%]"></div>
+<div class="flex-1 bg-primary-container/20 rounded-t-lg h-[45%]"></div>
+<div class="flex-1 bg-primary-container/20 rounded-t-lg h-[80%]"></div>
+<div class="flex-1 bg-primary-container/20 rounded-t-lg h-[55%]"></div>
+<div class="flex-1 bg-primary-container rounded-t-lg h-[95%]"></div>
+<div class="flex-1 bg-primary-container/20 rounded-t-lg h-[70%]"></div>
+</div>
+</div>
+<!-- Secondary Stats -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/15">
+<span class="material-symbols-outlined text-primary mb-3">visibility</span>
+<h3 class="text-3xl font-serif font-bold">8.4k</h3>
+<p class="text-sm text-on-surface-variant uppercase tracking-wider mt-1">Page Views</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/15">
+<span class="material-symbols-outlined text-tertiary mb-3">event_available</span>
+<h3 class="text-3xl font-serif font-bold">12</h3>
+<p class="text-sm text-on-surface-variant uppercase tracking-wider mt-1">Active Events</p>
+</div>
+</div>
+</div>
+<!-- Action Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+<button class="group bg-gradient-to-br from-primary to-primary-container p-6 rounded-2xl text-on-primary flex flex-col items-start gap-4 transition-transform active:scale-95 shadow-xl shadow-primary/10">
+<span class="material-symbols-outlined text-3xl">add_circle</span>
+<span class="text-lg font-bold font-sans uppercase tracking-widest">Add New Event</span>
+</button>
+<button class="group bg-surface-container-lowest border border-outline-variant/15 p-6 rounded-2xl text-on-surface flex flex-col items-start gap-4 transition-all hover:bg-primary-fixed/30 active:scale-95">
+<span class="material-symbols-outlined text-3xl text-primary">schedule</span>
+<span class="text-lg font-bold font-sans uppercase tracking-widest">Temple Schedule</span>
+</button>
+<button class="group bg-surface-container-lowest border border-outline-variant/15 p-6 rounded-2xl text-on-surface flex flex-col items-start gap-4 transition-all hover:bg-primary-fixed/30 active:scale-95">
+<span class="material-symbols-outlined text-3xl text-primary">campaign</span>
+<span class="text-lg font-bold font-sans uppercase tracking-widest">Post Announcement</span>
+</button>
+</div>
+<!-- Two Column Layout: Management & Notifications -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+<!-- Management List -->
+<div class="lg:col-span-2">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-serif font-bold">Event Management</h2>
+<button class="text-primary font-sans text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+                        View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Event Row 1 -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 flex items-center gap-4 transition-colors hover:bg-white border border-outline-variant/15">
+<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Event" class="w-full h-full object-cover" data-alt="Intricate golden temple architecture during sunrise with orange glowing sky and cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkbUUL3LD2XW7P4NeeBH0w8Zu6r07ojwBEB0hqmyjq2mMeS_TaQ6SDqQDYYOkuovBf0LC6gmS_WBbPDNsMStVAo2C-Pcn4SsLc7dVqvUjCPNnKf2NZr8XFhAVKTUdp_VMY_It6NfGtzWrtrFm4g-Lp3wh4LvzWklbjxeiyT1SoDXatS4Kje6NZBgyKPi8jQ_H-d0tzk6unxOP0RQf3KzE0nUILDaG3esLQ23ZVpZSNsKlKZmkAUvQYZoKtYw8A_FiW3WoLImlo4aA"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-bold text-lg font-serif">Evening Aarti Ceremony</h4>
+<p class="text-xs text-on-surface-variant font-sans">Oct 24, 2023 • Varanasi Ghats</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden sm:block text-right">
+<span class="block text-xs uppercase tracking-widest text-stone-400">Tickets</span>
+<span class="font-bold">142/200</span>
+</div>
+<span class="px-3 py-1 bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-widest rounded-full">Live</span>
+<button class="material-symbols-outlined text-stone-400">more_vert</button>
+</div>
+</div>
+<!-- Event Row 2 -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 flex items-center gap-4 border border-outline-variant/15">
+<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Event" class="w-full h-full object-cover" data-alt="Traditional Indian dance performance with colorful silk costumes and dramatic stage lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA38D23peL1nNSdfCvXKz5JNAmR-aHIHPtrKYxLjaBp3523T4lB-6stNrzVrYnJfVsTuBkIwuExcSx6FZ_Dab4wK-lx5RJ_oTQSgIu0j95MIYKdwgEl2He6Teb8tEBvCu-qlp6r7CzvVvlL8VTd3sMffhE-uieuGWjvKxVIw8KREJMKNPVR7Y8atuawH0imV-gcjHlsnMp13WEe9qyJIMoy02D9-OtwJh2RVfUTFPMPwvW4X_onLIlmHWp-GX4i3RRSSmw7qCdNBe4"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-bold text-lg font-serif">Classical Mudra Workshop</h4>
+<p class="text-xs text-on-surface-variant font-sans">Nov 02, 2023 • Cultural Hall</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden sm:block text-right">
+<span class="block text-xs uppercase tracking-widest text-stone-400">Tickets</span>
+<span class="font-bold">45/50</span>
+</div>
+<span class="px-3 py-1 bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-widest rounded-full">Draft</span>
+<button class="material-symbols-outlined text-stone-400">more_vert</button>
+</div>
+</div>
+<!-- Event Row 3 -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 flex items-center gap-4 border border-outline-variant/15">
+<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Event" class="w-full h-full object-cover" data-alt="Close up of traditional clay lamps with warm oil flames and decorative flower petals around them" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjXArwAXnG-7KDqRsf2fziNrLG8c1quX2NjEykmYOyXBFi1B-cuDW_NsfHESTxqMgtzryvJvf6l6O_jcg2kDhLHaYJVrCb6bGbTQn3Vj8BokdtzgVvJyOhEvBw8rIqkm18fCye9kskmH0WMoxHTAP-oIKFObCQ3BWzBn1cXU7pACQ06FeEjMi8LQY64kdQCY20Mvc3alg1Ld9ellH1kRmPWXFGxaeSSE9ACvrt6-_VGzYp7z8uqjo7VDi14D8lqIm5EEF1Q2uoeM0"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-bold text-lg font-serif">Deepavali Night Gala</h4>
+<p class="text-xs text-on-surface-variant font-sans">Nov 12, 2023 • Main Plaza</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden sm:block text-right">
+<span class="block text-xs uppercase tracking-widest text-stone-400">Tickets</span>
+<span class="font-bold">500/500</span>
+</div>
+<span class="px-3 py-1 bg-red-100 text-red-800 text-[10px] font-bold uppercase tracking-widest rounded-full">Sold Out</span>
+<button class="material-symbols-outlined text-stone-400">more_vert</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Notifications / Alerts -->
+<div class="lg:col-span-1">
+<h2 class="text-2xl font-serif font-bold mb-6">Recent Activity</h2>
+<div class="space-y-6 relative before:content-[''] before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[1px] before:bg-outline-variant/30">
+<!-- Notification 1 -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center border-4 border-background">
+<span class="material-symbols-outlined text-primary text-sm">confirmation_number</span>
+</div>
+<div>
+<p class="text-sm font-sans text-on-surface"><span class="font-bold">Aarav Sharma</span> registered for the Morning Yoga session.</p>
+<span class="text-xs text-stone-400">2 minutes ago</span>
+</div>
+</div>
+<!-- Notification 2 -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center border-4 border-background">
+<span class="material-symbols-outlined text-tertiary text-sm">verified_user</span>
+</div>
+<div>
+<p class="text-sm font-sans text-on-surface">New <span class="font-bold">Verification Request</span> from Pandit Rajan for priest credentials.</p>
+<div class="mt-2 flex gap-2">
+<button class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest rounded-lg">Approve</button>
+<button class="px-3 py-1 bg-surface-container-high text-on-surface text-[10px] font-bold uppercase tracking-widest rounded-lg">Details</button>
+</div>
+<span class="text-xs text-stone-400">1 hour ago</span>
+</div>
+</div>
+<!-- Notification 3 -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center border-4 border-background">
+<span class="material-symbols-outlined text-secondary text-sm">rate_review</span>
+</div>
+<div>
+<p class="text-sm font-sans text-on-surface">New review posted for <span class="font-bold">Heritage Walk</span>.</p>
+<div class="flex items-center text-secondary text-xs mt-1">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-xs text-stone-400">4 hours ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Shell -->
+<nav class="fixed bottom-0 left-0 w-full bg-[#faf9f6]/80 dark:bg-stone-900/80 backdrop-blur-md rounded-t-[1.5rem] z-50 flex justify-around items-center px-4 pb-6 pt-3 shadow-[0_-12px_32px_rgba(26,28,26,0.06)] md:hidden">
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] transition-all" href="#">
+<span class="material-symbols-outlined">home_max</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] transition-all" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Events</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:text-[#a14009] transition-all" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">AI Assistant</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#ffdbcd] dark:bg-[#a14009]/30 text-[#a14009] dark:text-[#ff9768] rounded-2xl px-5 py-2 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_celebrate</span>
+<span class="text-[11px] font-sans uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+</body></html>
