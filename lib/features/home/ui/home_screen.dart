@@ -2,126 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../provider/home_provider.dart';
+import '../../event_details/ui/event_details_screen.dart';
+import '../../temple_profile/ui/temple_profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  /// Space reserved at the top for the floating glass navigation in [MainShell].
+  final double topInset;
+
+  const HomeScreen({super.key, this.topInset = 0});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => HomeProvider(),
-      child: const _HomeScreenContent(),
+      child: _HomeScreenContent(topInset: topInset),
     );
   }
 }
 
 class _HomeScreenContent extends StatelessWidget {
-  const _HomeScreenContent();
+  final double topInset;
+
+  const _HomeScreenContent({required this.topInset});
 
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 800;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: _buildAppBar(context, isDesktop),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeroSection(context, isDesktop),
-            _buildSearchAndFilters(context, isDesktop),
-            _buildFeaturedTemples(context, isDesktop),
-            _buildCulturalPerformances(context),
-            _buildSacredEvents(context, isDesktop),
-            _buildNewsletter(context),
-            const SizedBox(height: 80), // Padding for bottom nav
-          ],
-        ),
-      ),
-      bottomNavigationBar: isDesktop ? null : _buildBottomNav(context),
-      floatingActionButton: isDesktop
-          ? FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              child: const Icon(Icons.auto_awesome),
-            )
-          : null,
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context, bool isDesktop) {
-    return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
-      elevation: 0,
-      scrolledUnderElevation: 4,
-      shadowColor: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
+    return SingleChildScrollView(
+      child: Column(
         children: [
-          const CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuC3sCWKnAQ7yUouqbzjEyx5pXZhzIV9R8XP_rGyod_nypWHQEwacfAJQ_5evmhqpFqeXybXyKdyYKKTFhPgQO_uDlmOcH0fSv0G5fSKZnrsKa3FLH2F6UqeZcKB8s1bpzXy3LCif6KX5ZGO_IExpGG0uUZFABj41GBjmcycFqX1ew7AyQQ5kre4CWTv8rLHbilNdx3c3HYv47lXrAvYKx_-iTXoF4NxJxCWgRH94xf4WfiqwGd_c2fTqlUR1cjkqr6Lt95OoxjuHCU',
-            ),
-            radius: 18,
-          ),
-          const SizedBox(width: 12),
-          Flexible(
-            child: Text(
-              'Sudarshan',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          SizedBox(height: topInset + 12),
+          _buildHeroSection(context, isDesktop),
+          _buildSearchAndFilters(context, isDesktop),
+          _buildFeaturedTemples(context, isDesktop),
+          _buildCulturalPerformances(context),
+          _buildSacredEvents(context, isDesktop),
+          _buildNewsletter(context),
+          const SizedBox(height: 40),
         ],
       ),
-      actions: [
-        if (isDesktop) ...[
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'Home',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'Events',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'Sacred Spaces',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          const SizedBox(width: 32),
-        ],
-        IconButton(
-          icon: Icon(
-            Icons.notifications_outlined,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          onPressed: () {},
-        ),
-        const SizedBox(width: 16),
-      ],
     );
   }
 
@@ -445,7 +365,11 @@ class _HomeScreenContent extends StatelessWidget {
     String title,
     String location,
   ) {
-    return Container(
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const TempleProfileScreen()),
+      ),
+      child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40),
         image: DecorationImage(
@@ -487,6 +411,7 @@ class _HomeScreenContent extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -762,7 +687,11 @@ class _HomeScreenContent extends StatelessWidget {
     String title,
     String subtitle,
   ) {
-    return Container(
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const EventDetailsScreen()),
+      ),
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(
@@ -816,6 +745,7 @@ class _HomeScreenContent extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -902,97 +832,4 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNav(BuildContext context) {
-    return Consumer<HomeProvider>(
-      builder: (context, provider, child) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 16,
-                offset: const Offset(0, -8),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(
-                    context,
-                    Icons.home_filled,
-                    'Home',
-                    0,
-                    provider,
-                  ),
-                  _buildNavItem(
-                    context,
-                    Icons.calendar_month,
-                    'Events',
-                    1,
-                    provider,
-                  ),
-                  _buildNavItem(context, Icons.auto_awesome, 'AI', 2, provider),
-                  _buildNavItem(context, Icons.person, 'Profile', 3, provider),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildNavItem(
-    BuildContext context,
-    IconData icon,
-    String label,
-    int index,
-    HomeProvider provider,
-  ) {
-    final isSelected = provider.currentBottomNavIndex == index;
-    return InkWell(
-      onTap: () => provider.updateBottomNavIndex(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Theme.of(context).colorScheme.primaryContainer
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label.toUpperCase(),
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

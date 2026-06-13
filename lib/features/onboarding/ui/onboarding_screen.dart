@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_colors.dart';
 import '../provider/onboarding_provider.dart';
-import '../../home/ui/home_screen.dart';
+import '../../signup/ui/signup_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -175,7 +175,7 @@ class _OnboardingContent extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () {
                               if (provider.currentStep == 2) {
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SignupScreen()));
                               } else {
                                 provider.nextStep();
                               }
@@ -210,7 +210,7 @@ class _OnboardingContent extends StatelessWidget {
                           width: double.infinity,
                           child: TextButton(
                             onPressed: () {
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SignupScreen()));
                             },
                             child: Text(
                               'SKIP INTRODUCTION',

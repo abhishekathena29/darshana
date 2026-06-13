@@ -120,14 +120,6 @@ class _TempleProfileContent extends StatelessWidget {
               ],
             ),
           ),
-          
-          if (!isDesktop)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _buildBottomNav(context),
-            ),
         ],
       ),
     );
@@ -143,7 +135,7 @@ class _TempleProfileContent extends StatelessWidget {
       elevation: 0,
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
-        onPressed: () {},
+        onPressed: () => Navigator.of(context).maybePop(),
       ),
       title: Text(
         'Sudarshan',
@@ -461,8 +453,9 @@ class _TempleProfileContent extends StatelessWidget {
   }
 
   Widget _buildProTipsCard(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(isSmall ? 20.0 : 32.0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(32),
@@ -538,8 +531,9 @@ class _TempleProfileContent extends StatelessWidget {
   }
 
   Widget _buildFacilitiesCard(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(isSmall ? 20.0 : 32.0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
         borderRadius: BorderRadius.circular(32),
@@ -570,8 +564,10 @@ class _TempleProfileContent extends StatelessWidget {
   }
 
   Widget _buildFacilityItem(BuildContext context, IconData icon, String title, String subtitle) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final itemWidth = screenWidth < 360 ? screenWidth - 80 : 160.0;
     return SizedBox(
-      width: 160,
+      width: itemWidth,
       child: Row(
         children: [
           Container(
@@ -590,82 +586,32 @@ class _TempleProfileContent extends StatelessWidget {
             child: Icon(icon, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
-                  color: Theme.of(context).colorScheme.outline,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(subtitle, style: const TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, -8),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(context, Icons.home_filled, 'Home', false),
-              _buildNavItem(context, Icons.calendar_month, 'Events', true),
-              _buildNavItem(context, Icons.auto_awesome, 'AI', false),
-              _buildNavItem(context, Icons.person, 'Profile', false),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+
 }

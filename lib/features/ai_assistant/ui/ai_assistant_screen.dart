@@ -20,7 +20,10 @@ class _AIAssistantContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 800;
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+    final isSmall = size.width < 360;
+    final horizontalPad = isSmall ? 16.0 : 24.0;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -28,7 +31,7 @@ class _AIAssistantContent extends StatelessWidget {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: 24.0),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 800),
@@ -39,33 +42,29 @@ class _AIAssistantContent extends StatelessWidget {
                     _buildSuggestedPrompts(context),
                     const SizedBox(height: 48),
                     _buildChatHistory(context, isDesktop),
-                    const SizedBox(height: 160), // Space for input and bottom nav
+                    const SizedBox(height: 120), // Space for the input bar
                   ],
                 ),
               ),
             ),
           ),
           Positioned(
-            bottom: isDesktop ? 24 : 100, // Adjust for bottom nav on mobile
+            bottom: 24,
             left: 0,
             right: 0,
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: _buildInputBar(context),
+            child: SafeArea(
+              top: false,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: horizontalPad),
+                    child: _buildInputBar(context),
+                  ),
                 ),
               ),
             ),
           ),
-          if (!isDesktop)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _buildBottomNav(context),
-            ),
         ],
       ),
     );
@@ -75,7 +74,12 @@ class _AIAssistantContent extends StatelessWidget {
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
       elevation: 0,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
+        onPressed: () => Navigator.of(context).maybePop(),
+      ),
       title: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           const CircleAvatar(
             backgroundImage: CachedNetworkImageProvider(
@@ -84,13 +88,16 @@ class _AIAssistantContent extends StatelessWidget {
             radius: 18,
           ),
           const SizedBox(width: 12),
-          Text(
-            'Sudarshan',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
-                ),
+          Flexible(
+            child: Text(
+              'Sudarshan',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold,
+                  ),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -105,18 +112,19 @@ class _AIAssistantContent extends StatelessWidget {
   }
 
   Widget _buildGreeting(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
     return Column(
       children: [
         Container(
-          width: 80,
-          height: 80,
+          width: isSmall ? 64 : 80,
+          height: isSmall ? 64 : 80,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2),
             shape: BoxShape.circle,
           ),
           child: Icon(
             Icons.auto_awesome,
-            size: 40,
+            size: isSmall ? 32 : 40,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
@@ -125,6 +133,7 @@ class _AIAssistantContent extends StatelessWidget {
           'Namaste, I am your Sacred Path Guide...',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                fontSize: isSmall ? 20 : null,
               ),
           textAlign: TextAlign.center,
         ),
@@ -133,7 +142,7 @@ class _AIAssistantContent extends StatelessWidget {
           'Ask me anything about your spiritual journey, temple customs, or travel logistics.',
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
-            fontSize: 16,
+            fontSize: isSmall ? 13 : 16,
           ),
           textAlign: TextAlign.center,
         ),
@@ -179,10 +188,12 @@ class _AIAssistantContent extends StatelessWidget {
   }
 
   Widget _buildUserMessage(BuildContext context, String text) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final leftMargin = screenWidth < 360 ? 24.0 : 48.0;
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
-        margin: const EdgeInsets.only(left: 48),
+        margin: EdgeInsets.only(left: leftMargin),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary,
@@ -410,6 +421,7 @@ class _AIAssistantContent extends StatelessWidget {
   }
 
   Widget _buildStayRecommendation(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -419,8 +431,8 @@ class _AIAssistantContent extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: isSmall ? 48 : 64,
+            height: isSmall ? 48 : 64,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               image: const DecorationImage(
@@ -436,9 +448,18 @@ class _AIAssistantContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Heritage Madurai', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                const Text(
+                  'Heritage Madurai',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 2),
-                Text('Recommended: 1.2km from Temple North Gate', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10)),
+                Text(
+                  'Recommended: 1.2km from Temple North Gate',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: List.generate(
@@ -449,6 +470,7 @@ class _AIAssistantContent extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(width: 8),
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
@@ -491,10 +513,13 @@ class _AIAssistantContent extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: provider.messageController,
-                  decoration: const InputDecoration(
-                    hintText: 'Ask about rituals, travel, or history...',
+                  decoration: InputDecoration(
+                    hintText: MediaQuery.of(context).size.width < 360
+                        ? 'Ask anything...'
+                        : 'Ask about rituals, travel, or history...',
+                    hintMaxLines: 1,
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                   ),
                 ),
               ),
@@ -524,61 +549,4 @@ class _AIAssistantContent extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, -8),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(context, Icons.home_filled, 'Home', false),
-              _buildNavItem(context, Icons.calendar_month, 'Events', false),
-              _buildNavItem(context, Icons.auto_awesome, 'AI', true),
-              _buildNavItem(context, Icons.person, 'Profile', false),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5) : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

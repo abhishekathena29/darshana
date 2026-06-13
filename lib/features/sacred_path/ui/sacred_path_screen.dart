@@ -4,19 +4,24 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../provider/sacred_path_provider.dart';
 
 class SacredPathScreen extends StatelessWidget {
-  const SacredPathScreen({super.key});
+  /// Space reserved at the top for the floating glass navigation in [MainShell].
+  final double topInset;
+
+  const SacredPathScreen({super.key, this.topInset = 0});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => SacredPathProvider(),
-      child: const _SacredPathContent(),
+      child: _SacredPathContent(topInset: topInset),
     );
   }
 }
 
 class _SacredPathContent extends StatelessWidget {
-  const _SacredPathContent();
+  final double topInset;
+
+  const _SacredPathContent({required this.topInset});
 
   @override
   Widget build(BuildContext context) {
@@ -25,65 +30,22 @@ class _SacredPathContent extends StatelessWidget {
     final isSmall = size.width < 360;
     final horizontalPad = isDesktop ? 64.0 : (isSmall ? 16.0 : 24.0);
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      extendBodyBehindAppBar: true,
-      appBar: _buildAppBar(context),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          top: kToolbarHeight + MediaQuery.of(context).padding.top + 24,
-          left: horizontalPad,
-          right: horizontalPad,
-          bottom: isDesktop ? 64 : 120,
-        ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1024),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 64),
-                _buildPathTimeline(context, isDesktop),
-              ],
-            ),
-          ),
-        ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        top: topInset + 24,
+        left: horizontalPad,
+        right: horizontalPad,
+        bottom: 40,
       ),
-      bottomNavigationBar: isDesktop ? null : _buildBottomNav(context),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(kToolbarHeight),
-      child: ClipRRect(
-        child: BackdropFilter(
-          filter: ColorFilter.mode(
-            Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
-            BlendMode.srcOver,
-          ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
-              onPressed: () {},
-            ),
-            title: Text(
-              'Sacred Path',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.map_outlined, color: Theme.of(context).colorScheme.outline),
-                onPressed: () {},
-              ),
-              const SizedBox(width: 8),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1024),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context),
+              const SizedBox(height: 64),
+              _buildPathTimeline(context, isDesktop),
             ],
           ),
         ),
@@ -337,61 +299,4 @@ class _SacredPathContent extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 16,
-            offset: const Offset(0, -8),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(context, Icons.home_max, 'Home', false),
-              _buildNavItem(context, Icons.explore, 'Path', true), // Sacred Path
-              _buildNavItem(context, Icons.calendar_month, 'Events', false),
-              _buildNavItem(context, Icons.person, 'Profile', false),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5) : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

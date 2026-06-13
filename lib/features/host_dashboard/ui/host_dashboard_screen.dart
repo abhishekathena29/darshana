@@ -4,115 +4,73 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../provider/host_dashboard_provider.dart';
 
 class HostDashboardScreen extends StatelessWidget {
-  const HostDashboardScreen({super.key});
+  /// Space reserved at the top for the floating glass navigation in [MainShell].
+  final double topInset;
+
+  const HostDashboardScreen({super.key, this.topInset = 0});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => HostDashboardProvider(),
-      child: const _HostDashboardContent(),
+      child: _HostDashboardContent(topInset: topInset),
     );
   }
 }
 
 class _HostDashboardContent extends StatelessWidget {
-  const _HostDashboardContent();
+  final double topInset;
+
+  const _HostDashboardContent({required this.topInset});
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 800;
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+    final isSmall = size.width < 360;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: _buildAppBar(context),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 40),
-            _buildQuickStats(context, isDesktop),
-            const SizedBox(height: 48),
-            _buildActionGrid(context, isDesktop),
-            const SizedBox(height: 48),
-            _buildManagementAndActivity(context, isDesktop),
-            const SizedBox(height: 80), // padding for bottom nav
-          ],
-        ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        top: topInset + 20,
+        left: isSmall ? 16.0 : 24.0,
+        right: isSmall ? 16.0 : 24.0,
+        bottom: isSmall ? 20.0 : 32.0,
       ),
-      bottomNavigationBar: isDesktop ? null : _buildBottomNav(context),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
-      elevation: 0,
-      title: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuA6RoABzKAXFwdQuKWIFXaEQFb7HErz8dIkIo28MAzVRSpgVMCYWpOm3w51R2W12Hnt6lRjLhLpCADtoJuF1goSVJOanqIN24I3DsZPKxjN3IYjVafDP1yCfygmlFNMvtQ30D3OYlq5Q4ZLUaqZLfdMtIh1owTIlcr5Wip8XSIFdHQzKJ0vEic7DMh8V8O9wHx7u0sbLg7c8eu6S-dhDVMoqJyv71t0J_ZkBFeGOrB4CzcixQteEpCUre10MPb5xTJBTtqwkCGak-8',
-            ),
-            radius: 18,
-          ),
-          const SizedBox(width: 12),
-          Text(
-            'Sudarshan',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
+          _buildHeader(context),
+          const SizedBox(height: 40),
+          _buildQuickStats(context, isDesktop),
+          const SizedBox(height: 48),
+          _buildActionGrid(context, isDesktop),
+          const SizedBox(height: 48),
+          _buildManagementAndActivity(context, isDesktop),
+          const SizedBox(height: 40),
         ],
       ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.search, color: Theme.of(context).colorScheme.outline),
-          onPressed: () {},
-        ),
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.notifications, color: Theme.of(context).colorScheme.primary),
-              onPressed: () {},
-            ),
-            Positioned(
-              top: 12,
-              right: 12,
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.error,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(width: 8),
-      ],
     );
   }
 
   Widget _buildHeader(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Organizer Dashboard',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Organizer Dashboard',
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           'Welcome back, Temple Administrator. Here is your community overview.',
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
-            fontSize: 16,
+            fontSize: isSmall ? 13 : 16,
             letterSpacing: 0.5,
           ),
         ),
@@ -121,6 +79,7 @@ class _HostDashboardContent extends StatelessWidget {
   }
 
   Widget _buildQuickStats(BuildContext context, bool isDesktop) {
+    final screenHeight = MediaQuery.of(context).size.height;
     if (isDesktop) {
       return SizedBox(
         height: 320,
@@ -142,21 +101,24 @@ class _HostDashboardContent extends StatelessWidget {
         ),
       );
     } else {
+      final mainStatHeight = screenHeight < 700 ? 240.0 : 300.0;
+      final secondaryHeight = screenHeight < 700 ? 120.0 : 140.0;
       return Column(
         children: [
-          SizedBox(height: 300, child: _buildMainStat(context)),
+          SizedBox(height: mainStatHeight, child: _buildMainStat(context)),
           const SizedBox(height: 24),
-          SizedBox(height: 140, child: _buildSecondaryStat(context, Icons.visibility, '8.4k', 'PAGE VIEWS', Theme.of(context).colorScheme.primary)),
+          SizedBox(height: secondaryHeight, child: _buildSecondaryStat(context, Icons.visibility, '8.4k', 'PAGE VIEWS', Theme.of(context).colorScheme.primary)),
           const SizedBox(height: 24),
-          SizedBox(height: 140, child: _buildSecondaryStat(context, Icons.event_available, '12', 'ACTIVE EVENTS', Theme.of(context).colorScheme.tertiary)),
+          SizedBox(height: secondaryHeight, child: _buildSecondaryStat(context, Icons.event_available, '12', 'ACTIVE EVENTS', Theme.of(context).colorScheme.tertiary)),
         ],
       );
     }
   }
 
   Widget _buildMainStat(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(isSmall ? 20.0 : 32.0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(32),
@@ -175,25 +137,33 @@ class _HostDashboardContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'TOTAL REGISTRATIONS',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2.0,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TOTAL REGISTRATIONS',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2.0,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '1,284',
-                    style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '1,284',
+                        style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
@@ -367,11 +337,16 @@ class _HostDashboardContent extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Event Management',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            Flexible(
+              child: Text(
+                'Event Management',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
+            const SizedBox(width: 8),
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   'VIEW ALL',
@@ -422,6 +397,7 @@ class _HostDashboardContent extends StatelessWidget {
   }
 
   Widget _buildEventRow(BuildContext context, String imageUrl, String title, String subtitle, String tickets, String status, MaterialColor statusColor) {
+    final isNarrow = MediaQuery.of(context).size.width < 600;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -447,42 +423,81 @@ class _HostDashboardContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
                 const SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+                Text(
+                  subtitle,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                if (isNarrow) ...[
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: [
+                      Text(tickets, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: statusColor.shade100,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          status,
+                          style: TextStyle(
+                            color: statusColor.shade800,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                'TICKETS',
-                style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1.5),
-              ),
-              const SizedBox(height: 2),
-              Text(tickets, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            ],
-          ),
-          const SizedBox(width: 24),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: statusColor.shade100,
-              borderRadius: BorderRadius.circular(16),
+          if (!isNarrow) ...[
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'TICKETS',
+                  style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                ),
+                const SizedBox(height: 2),
+                Text(tickets, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              ],
             ),
-            child: Text(
-              status,
-              style: TextStyle(
-                color: statusColor.shade800,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.0,
+            const SizedBox(width: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: statusColor.shade100,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                status,
+                style: TextStyle(
+                  color: statusColor.shade800,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 16),
+            const SizedBox(width: 16),
+          ] else
+            const SizedBox(width: 8),
           Icon(Icons.more_vert, color: Theme.of(context).colorScheme.outline),
         ],
       ),
@@ -635,61 +650,4 @@ class _HostDashboardContent extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, -8),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(context, Icons.home_max, 'Home', false),
-              _buildNavItem(context, Icons.calendar_month, 'Events', false),
-              _buildNavItem(context, Icons.auto_awesome, 'AI', false),
-              _buildNavItem(context, Icons.person, 'Profile', true),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5) : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

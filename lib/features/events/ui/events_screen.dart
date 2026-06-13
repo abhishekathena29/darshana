@@ -2,80 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../provider/events_provider.dart';
+import '../../event_details/ui/event_details_screen.dart';
 
 class EventsScreen extends StatelessWidget {
-  const EventsScreen({super.key});
+  /// Space reserved at the top for the floating glass navigation in [MainShell].
+  final double topInset;
+
+  const EventsScreen({super.key, this.topInset = 0});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => EventsProvider(),
-      child: const _EventsScreenContent(),
+      child: _EventsScreenContent(topInset: topInset),
     );
   }
 }
 
 class _EventsScreenContent extends StatelessWidget {
-  const _EventsScreenContent();
+  final double topInset;
+
+  const _EventsScreenContent({required this.topInset});
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 800;
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+    final isTablet = size.width >= 600 && size.width <= 800;
+    final isSmall = size.width < 360;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: _buildAppBar(context),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeroSearch(context),
-            const SizedBox(height: 32),
-            _buildCategoryScroll(context),
-            const SizedBox(height: 40),
-            _buildFeaturedBentoGrid(context, isDesktop),
-            const SizedBox(height: 48),
-            _buildUpcomingEvents(context, isDesktop),
-            const SizedBox(height: 100), // padding for bottom nav
-          ],
-        ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        top: topInset + 16,
+        left: isSmall ? 16.0 : 24.0,
+        right: isSmall ? 16.0 : 24.0,
+        bottom: isSmall ? 16.0 : 24.0,
       ),
-      bottomNavigationBar: isDesktop ? null : _buildBottomNav(context),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
-      elevation: 0,
-      leading: IconButton(
-        icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.primary),
-        onPressed: () {},
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeroSearch(context),
+          const SizedBox(height: 32),
+          _buildCategoryScroll(context),
+          const SizedBox(height: 40),
+          _buildFeaturedBentoGrid(context, isDesktop),
+          const SizedBox(height: 48),
+          _buildUpcomingEvents(context, isDesktop, isTablet),
+          const SizedBox(height: 40),
+        ],
       ),
-      title: Text(
-        'Sanctuary',
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.bold,
-            ),
-      ),
-      actions: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuBl3pXYIlih--dEH6zYitCOIkIgytNjlWDOfeclLGRtypaPdr7a-AmqrEULjZXv90LU6XoSB1NTev5_LwvPwtvCIJeW-FZLkTUDvTE3SV9_JFMXHBPKkTT6AvybNppK_EY1-srYJKwNMqp8UHeEnF28pe-0DIh9IlZzBk98VOi0v3m1vz7FupmxBu8SMC6EljBuK34EZauz40mELa-BTHPB7u41FuEjfoDjG10MHXFDs2D-eI1UTU-OQK6Qn7cVVO1zS27n3wk6Keg',
-            ),
-            radius: 18,
-          ),
-        ),
-      ],
     );
   }
 
   Widget _buildHeroSearch(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmall = size.width < 360;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -84,11 +65,12 @@ class _EventsScreenContent extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 height: 1.2,
+                fontSize: isSmall ? 22 : null,
               ),
         ),
         const SizedBox(height: 24),
         Container(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: BoxConstraints(maxWidth: size.width > 600 ? 600 : double.infinity),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
             borderRadius: BorderRadius.circular(16),
@@ -142,9 +124,10 @@ class _EventsScreenContent extends StatelessWidget {
   }
 
   Widget _buildFeaturedBentoGrid(BuildContext context, bool isDesktop) {
+    final screenHeight = MediaQuery.of(context).size.height;
     if (isDesktop) {
       return SizedBox(
-        height: 500,
+        height: screenHeight < 700 ? 400 : 500,
         child: Row(
           children: [
             Expanded(flex: 2, child: _buildLargeFeaturedCard(context)),
@@ -163,9 +146,10 @@ class _EventsScreenContent extends StatelessWidget {
         ),
       );
     } else {
+      final largeCardHeight = screenHeight < 700 ? 280.0 : 400.0;
       return Column(
         children: [
-          SizedBox(height: 400, child: _buildLargeFeaturedCard(context)),
+          SizedBox(height: largeCardHeight, child: _buildLargeFeaturedCard(context)),
           const SizedBox(height: 24),
           _buildSideFeaturedCard(context, 'Spiritual Music', 'Evening Raga & Meditation', 'A soul-stirring performance by maestros in the heart of the sacred valley.', 'March 12 • 5 PM', null),
           const SizedBox(height: 24),
@@ -176,6 +160,7 @@ class _EventsScreenContent extends StatelessWidget {
   }
 
   Widget _buildLargeFeaturedCard(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
@@ -195,7 +180,7 @@ class _EventsScreenContent extends StatelessWidget {
             colors: [Colors.black87, Colors.black26, Colors.transparent],
           ),
         ),
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(isSmall ? 20.0 : 32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +216,10 @@ class _EventsScreenContent extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: isSmall ? 22 : null,
                   ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 16),
             Wrap(
@@ -324,13 +312,16 @@ class _EventsScreenContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                timeStr.toUpperCase(),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.outline,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
+              Expanded(
+                child: Text(
+                  timeStr.toUpperCase(),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.outline,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Icon(Icons.arrow_forward, color: Theme.of(context).colorScheme.primary),
@@ -341,7 +332,9 @@ class _EventsScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildUpcomingEvents(BuildContext context, bool isDesktop) {
+  Widget _buildUpcomingEvents(BuildContext context, bool isDesktop, bool isTablet) {
+    final crossAxisCount = isDesktop ? 3 : (isTablet ? 2 : 1);
+    final aspectRatio = isDesktop ? 0.75 : (isTablet ? 0.85 : 1.0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -351,12 +344,12 @@ class _EventsScreenContent extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         GridView.count(
-          crossAxisCount: isDesktop ? 3 : 1,
+          crossAxisCount: crossAxisCount,
           crossAxisSpacing: 24,
           mainAxisSpacing: 24,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: isDesktop ? 0.75 : 1.0,
+          childAspectRatio: aspectRatio,
           children: [
             _buildEventCard(
               context,
@@ -392,7 +385,11 @@ class _EventsScreenContent extends StatelessWidget {
   }
 
   Widget _buildEventCard(BuildContext context, String imageUrl, String month, String date, String title, String time, String location) {
-    return Column(
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const EventDetailsScreen()),
+      ),
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
@@ -440,13 +437,21 @@ class _EventsScreenContent extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 8),
         Row(
           children: [
             Icon(Icons.schedule, size: 16, color: Theme.of(context).colorScheme.outline),
             const SizedBox(width: 8),
-            Text(time, style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12)),
+            Expanded(
+              child: Text(
+                time,
+                style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 4),
@@ -464,64 +469,8 @@ class _EventsScreenContent extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, -8),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(context, Icons.temple_hindu, 'Home', false),
-              _buildNavItem(context, Icons.event_note, 'Events', true),
-              _buildNavItem(context, Icons.menu_book, 'Journal', false),
-              _buildNavItem(context, Icons.person, 'Profile', false),
-            ],
-          ),
-        ),
       ),
     );
   }
 
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5) : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

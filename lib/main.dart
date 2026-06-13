@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
+import 'core/session/user_session.dart';
 import 'features/welcome/provider/welcome_provider.dart';
 import 'features/welcome/ui/welcome_screen.dart';
 
@@ -15,10 +16,12 @@ class SacredHeritageApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => UserSession()),
         ChangeNotifierProvider(create: (_) => WelcomeProvider()),
       ],
       child: MaterialApp(
         title: 'Sudarshan',
+        debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,

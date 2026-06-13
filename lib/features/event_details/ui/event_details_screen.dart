@@ -77,13 +77,12 @@ class _EventDetailsContent extends StatelessWidget {
                   _buildArtistsSection(context),
                   const SizedBox(height: 48),
                   _buildCommunitySection(context),
-                  const SizedBox(height: 80), // padding for bottom nav
+                  const SizedBox(height: 40),
                 ],
               ),
           ],
         ),
       ),
-      bottomNavigationBar: isDesktop ? null : _buildBottomNav(context),
     );
   }
 
@@ -93,7 +92,7 @@ class _EventDetailsContent extends StatelessWidget {
       elevation: 0,
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
-        onPressed: () {},
+        onPressed: () => Navigator.of(context).maybePop(),
       ),
       title: Text(
         'Sudarshan',
@@ -724,61 +723,4 @@ class _EventDetailsContent extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, -8),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(context, Icons.temple_hindu, 'Home', false),
-              _buildNavItem(context, Icons.event_note, 'Events', true),
-              _buildNavItem(context, Icons.menu_book, 'Journal', false),
-              _buildNavItem(context, Icons.person, 'Profile', false),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5) : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

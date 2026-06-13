@@ -3,8 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/session/user_session.dart';
+import '../../../core/models/user_role.dart';
+import '../../../core/widgets/main_shell.dart';
 import '../provider/login_provider.dart';
-import '../../home/ui/home_screen.dart';
+import '../../signup/ui/signup_screen.dart';
 
 const String _googleSvg = '''
 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -270,7 +273,12 @@ class _LoginScreenContent extends StatelessWidget {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+                                    context.read<UserSession>().signIn(role: UserRole.devotee);
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const MainShell()),
+                                      (route) => false,
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.transparent,
@@ -385,19 +393,27 @@ class _LoginScreenContent extends StatelessWidget {
                               
                               // Sign Up Link
                               Center(
-                                child: Text.rich(
-                                  TextSpan(
-                                    text: 'New seeker? ',
-                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                    children: [
-                                      TextSpan(
-                                        text: 'Create an account',
-                                        style: TextStyle(
-                                          color: Theme.of(context).colorScheme.primary,
-                                          fontWeight: FontWeight.bold,
+                                child: GestureDetector(
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const SignupScreen(),
+                                    ),
+                                  ),
+                                  child: Text.rich(
+                                    TextSpan(
+                                      text: 'New seeker? ',
+                                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      children: [
+                                        TextSpan(
+                                          text: 'Create an account',
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
