@@ -95,7 +95,7 @@ class _EventDetailsContent extends StatelessWidget {
         onPressed: () => Navigator.of(context).maybePop(),
       ),
       title: Text(
-        'Sudarshan',
+        'Darshana',
         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: Theme.of(context).colorScheme.primary,
               fontStyle: FontStyle.italic,

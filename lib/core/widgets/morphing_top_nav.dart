@@ -41,7 +41,7 @@ class MorphingTopNav extends StatelessWidget {
     required this.destinations,
     required this.currentIndex,
     required this.onSelect,
-    this.brand = 'Sudarshan',
+    this.brand = 'Darshana',
     this.onNotifications,
     this.onAvatar,
     this.avatarUrl,

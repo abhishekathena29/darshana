@@ -147,13 +147,20 @@ class _EventsScreenContent extends StatelessWidget {
       );
     } else {
       final largeCardHeight = screenHeight < 700 ? 280.0 : 400.0;
+      final sideCardHeight = screenHeight < 700 ? 200.0 : 240.0;
       return Column(
         children: [
           SizedBox(height: largeCardHeight, child: _buildLargeFeaturedCard(context)),
           const SizedBox(height: 24),
-          _buildSideFeaturedCard(context, 'Spiritual Music', 'Evening Raga & Meditation', 'A soul-stirring performance by maestros in the heart of the sacred valley.', 'March 12 • 5 PM', null),
+          SizedBox(
+            height: sideCardHeight,
+            child: _buildSideFeaturedCard(context, 'Spiritual Music', 'Evening Raga & Meditation', 'A soul-stirring performance by maestros in the heart of the sacred valley.', 'March 12 • 5 PM', null),
+          ),
           const SizedBox(height: 24),
-          _buildSideFeaturedCard(context, 'Cultural Tour', 'Temple Heritage Walk', null, 'March 15 • 7 AM', 'Limited Spots'),
+          SizedBox(
+            height: sideCardHeight,
+            child: _buildSideFeaturedCard(context, 'Cultural Tour', 'Temple Heritage Walk', null, 'March 15 • 7 AM', 'Limited Spots'),
+          ),
         ],
       );
     }

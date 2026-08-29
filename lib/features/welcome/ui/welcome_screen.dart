@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../onboarding/ui/onboarding_screen.dart';
 import '../../login/ui/login_screen.dart';
+import 'widgets/temple_hero_background.dart';
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -13,18 +14,12 @@ class WelcomeScreen extends StatelessWidget {
     final isWide = size.width > 600;
     final horizontalPadding = isSmall ? 20.0 : (isWide ? 32.0 : 24.0);
     final verticalPadding = isSmall ? 16.0 : 24.0;
-    final decorIconSize = isWide ? 200.0 : 140.0;
-
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
-          Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl:
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAkWUG3mUcCQvl_Lh1JIdt6_79pxKgDSaZsCi3Iwjd7PEsLLfJaNnsf9cVu7xitbhBOyMCKgKUn0Vvp3nGk8S4nG-7tcSMpsR5qUEb-AImrdY4lxNrNjXkyMf1nkTUMGrbLF7iZd2LdIOFT_hFzbew6Yp83G2nvJxdPKB9znW3RTWNVJ6fj6i3BG2EciuTi1T8AfBzyEhToPEQF_1AJA2uCT-f-IEuhqtcCJzoffneHO77h4ggIsic3sFYpq9VoWwbbxbkj-b3fOh8',
-              fit: BoxFit.cover,
-            ),
+          // Background: code-drawn temple skyline at dusk
+          const Positioned.fill(
+            child: TempleHeroBackground(),
           ),
 
           // Gradient Overlay
@@ -39,20 +34,6 @@ class WelcomeScreen extends StatelessWidget {
                     Colors.black45,
                   ],
                 ),
-              ),
-            ),
-          ),
-
-          // Decorative Element (clipped to avoid horizontal overflow on small screens)
-          Positioned(
-            top: -decorIconSize * 0.2,
-            right: -decorIconSize * 0.2,
-            child: Opacity(
-              opacity: 0.2,
-              child: Icon(
-                Icons.temple_hindu,
-                size: decorIconSize,
-                color: Colors.white,
               ),
             ),
           ),
@@ -76,7 +57,7 @@ class WelcomeScreen extends StatelessWidget {
                         children: [
                           // Top Branding
                           Text(
-                            'Sudarshan',
+                            'Darshana',
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   fontStyle: FontStyle.italic,
                                   color: Colors.white,

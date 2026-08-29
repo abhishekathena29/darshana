@@ -90,7 +90,7 @@ class _AIAssistantContent extends StatelessWidget {
           const SizedBox(width: 12),
           Flexible(
             child: Text(
-              'Sudarshan',
+              'Darshana',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                     fontStyle: FontStyle.italic,

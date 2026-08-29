@@ -20,7 +20,7 @@ class SacredHeritageApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WelcomeProvider()),
       ],
       child: MaterialApp(
-        title: 'Sudarshan',
+        title: 'Darshana',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

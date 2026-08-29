@@ -89,7 +89,7 @@ class _SignupContentState extends State<_SignupContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Join Sudarshan',
+                        'Join Darshana',
                         style: theme.textTheme.headlineMedium?.copyWith(
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.bold,
