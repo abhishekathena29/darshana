@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/models/event_model.dart';
+import '../../../core/services/event_repository.dart';
 import '../provider/events_provider.dart';
 import '../../event_details/ui/event_details_screen.dart';
 
@@ -19,10 +21,24 @@ class EventsScreen extends StatelessWidget {
   }
 }
 
-class _EventsScreenContent extends StatelessWidget {
+class _EventsScreenContent extends StatefulWidget {
   final double topInset;
 
   const _EventsScreenContent({required this.topInset});
+
+  @override
+  State<_EventsScreenContent> createState() => _EventsScreenContentState();
+}
+
+class _EventsScreenContentState extends State<_EventsScreenContent> {
+  final _searchController = TextEditingController();
+  String _search = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,27 +46,56 @@ class _EventsScreenContent extends StatelessWidget {
     final isDesktop = size.width > 800;
     final isTablet = size.width >= 600 && size.width <= 800;
     final isSmall = size.width < 360;
+    final selectedCategory = context.watch<EventsProvider>().selectedCategory;
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.only(
-        top: topInset + 16,
-        left: isSmall ? 16.0 : 24.0,
-        right: isSmall ? 16.0 : 24.0,
-        bottom: isSmall ? 16.0 : 24.0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeroSearch(context),
-          const SizedBox(height: 32),
-          _buildCategoryScroll(context),
-          const SizedBox(height: 40),
-          _buildFeaturedBentoGrid(context, isDesktop),
-          const SizedBox(height: 48),
-          _buildUpcomingEvents(context, isDesktop, isTablet),
-          const SizedBox(height: 40),
-        ],
-      ),
+    return StreamBuilder<List<EventModel>>(
+      stream: EventRepository().watchAll(),
+      builder: (context, snapshot) {
+        final allEvents = snapshot.data ?? const [];
+        final upcoming = allEvents.where((e) => e.isUpcoming).toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
+        final filtered = upcoming.where((e) {
+          final matchesCategory = selectedCategory == 'All Events' || e.category == selectedCategory;
+          final matchesSearch = _search.isEmpty || e.title.toLowerCase().contains(_search.toLowerCase());
+          return matchesCategory && matchesSearch;
+        }).toList();
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.only(
+            top: widget.topInset + 16,
+            left: isSmall ? 16.0 : 24.0,
+            right: isSmall ? 16.0 : 24.0,
+            bottom: isSmall ? 16.0 : 24.0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeroSearch(context),
+              const SizedBox(height: 32),
+              _buildCategoryScroll(context),
+              const SizedBox(height: 40),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const Center(child: CircularProgressIndicator())
+              else if (filtered.isEmpty)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 40),
+                    child: Text(
+                      'No events found.',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                  ),
+                )
+              else ...[
+                _buildFeaturedBentoGrid(context, isDesktop, filtered),
+                const SizedBox(height: 48),
+                _buildUpcomingEvents(context, isDesktop, isTablet, filtered),
+              ],
+              const SizedBox(height: 40),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -76,6 +121,8 @@ class _EventsScreenContent extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           child: TextField(
+            controller: _searchController,
+            onChanged: (value) => setState(() => _search = value),
             decoration: InputDecoration(
               hintText: 'Search events, poojas, or sites...',
               prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.outline),
@@ -123,22 +170,29 @@ class _EventsScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturedBentoGrid(BuildContext context, bool isDesktop) {
+  Widget _buildFeaturedBentoGrid(BuildContext context, bool isDesktop, List<EventModel> events) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final large = events.first;
+    final sides = events.skip(1).take(2).toList();
+    if (sides.isEmpty) {
+      final height = isDesktop ? (screenHeight < 700 ? 400.0 : 500.0) : (screenHeight < 700 ? 280.0 : 400.0);
+      return SizedBox(height: height, child: _buildLargeFeaturedCard(context, large));
+    }
     if (isDesktop) {
       return SizedBox(
         height: screenHeight < 700 ? 400 : 500,
         child: Row(
           children: [
-            Expanded(flex: 2, child: _buildLargeFeaturedCard(context)),
+            Expanded(flex: 2, child: _buildLargeFeaturedCard(context, large)),
             const SizedBox(width: 24),
             Expanded(
               flex: 1,
               child: Column(
                 children: [
-                  Expanded(child: _buildSideFeaturedCard(context, 'Spiritual Music', 'Evening Raga & Meditation', 'A soul-stirring performance by maestros in the heart of the sacred valley.', 'March 12 • 5 PM', null)),
-                  const SizedBox(height: 24),
-                  Expanded(child: _buildSideFeaturedCard(context, 'Cultural Tour', 'Temple Heritage Walk', null, 'March 15 • 7 AM', 'Limited Spots')),
+                  for (var i = 0; i < sides.length; i++) ...[
+                    if (i > 0) const SizedBox(height: 24),
+                    Expanded(child: _buildSideFeaturedCard(context, sides[i])),
+                  ],
                 ],
               ),
             ),
@@ -150,31 +204,27 @@ class _EventsScreenContent extends StatelessWidget {
       final sideCardHeight = screenHeight < 700 ? 200.0 : 240.0;
       return Column(
         children: [
-          SizedBox(height: largeCardHeight, child: _buildLargeFeaturedCard(context)),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: sideCardHeight,
-            child: _buildSideFeaturedCard(context, 'Spiritual Music', 'Evening Raga & Meditation', 'A soul-stirring performance by maestros in the heart of the sacred valley.', 'March 12 • 5 PM', null),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: sideCardHeight,
-            child: _buildSideFeaturedCard(context, 'Cultural Tour', 'Temple Heritage Walk', null, 'March 15 • 7 AM', 'Limited Spots'),
-          ),
+          SizedBox(height: largeCardHeight, child: _buildLargeFeaturedCard(context, large)),
+          for (final side in sides) ...[
+            const SizedBox(height: 24),
+            SizedBox(height: sideCardHeight, child: _buildSideFeaturedCard(context, side)),
+          ],
         ],
       );
     }
   }
 
-  Widget _buildLargeFeaturedCard(BuildContext context) {
+  Widget _buildLargeFeaturedCard(BuildContext context, EventModel event) {
     final isSmall = MediaQuery.of(context).size.width < 360;
-    return Container(
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => EventDetailsScreen(eventId: event.id)),
+      ),
+      child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
-        image: const DecorationImage(
-          image: CachedNetworkImageProvider(
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuAdfhQvhLaA6RCxWiMBr5WGMj45NMtcXqh5pCqRAbDUwP82kWQOdBKvuGuVH-17ofDfeBL5xkHxSC2tVdHI4-kV9vuAIZjpJRq5v9PQ30dMZdu5G2qJouof4ozjEsMKBi4nRIWujx1YN4kUzCKDIgLg8yLx23henCcOjssPwd5RaFCxUmowLuGjiWYqSM0HdwcGy2zerbjscMUvNy6zuNdLEXWkB_TL8D-scncSf0JnI3MKjah47UjAgSiRoTU2DRoK9ob667-h5Ro',
-          ),
+        image: DecorationImage(
+          image: CachedNetworkImageProvider(event.imageUrl),
           fit: BoxFit.cover,
         ),
       ),
@@ -192,34 +242,35 @@ class _EventsScreenContent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade800,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+            if (event.badge.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade800,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'LIVE NOW',
-                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      event.badge.toUpperCase(),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                    ),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 16),
             Text(
-              'Maha Shivratri Celebration 2024',
+              event.title,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -235,18 +286,18 @@ class _EventsScreenContent extends StatelessWidget {
               children: [
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.calendar_today, color: Colors.white70, size: 16),
-                    SizedBox(width: 8),
-                    Text('Tonight, 6:00 PM', style: TextStyle(color: Colors.white70)),
+                  children: [
+                    const Icon(Icons.calendar_today, color: Colors.white70, size: 16),
+                    const SizedBox(width: 8),
+                    Text('${event.dateText} • ${event.startTime}', style: const TextStyle(color: Colors.white70)),
                   ],
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.location_on, color: Colors.white70, size: 16),
-                    SizedBox(width: 8),
-                    Text('Varanasi Ghats, India', style: TextStyle(color: Colors.white70)),
+                  children: [
+                    const Icon(Icons.location_on, color: Colors.white70, size: 16),
+                    const SizedBox(width: 8),
+                    Text(event.venue, style: const TextStyle(color: Colors.white70)),
                   ],
                 ),
               ],
@@ -254,11 +305,16 @@ class _EventsScreenContent extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 
-  Widget _buildSideFeaturedCard(BuildContext context, String tag, String title, String? description, String timeStr, String? badge) {
-    return Container(
+  Widget _buildSideFeaturedCard(BuildContext context, EventModel event) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => EventDetailsScreen(eventId: event.id)),
+      ),
+      child: Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -275,7 +331,7 @@ class _EventsScreenContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            tag.toUpperCase(),
+            event.category.toUpperCase(),
             style: TextStyle(
               color: Theme.of(context).colorScheme.primary,
               fontSize: 10,
@@ -285,43 +341,27 @@ class _EventsScreenContent extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            title,
+            event.title,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          if (description != null) ...[
+          if (event.description.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text(
-              description,
+              event.description,
               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ],
           const Spacer(),
-          if (badge != null) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.errorContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                badge.toUpperCase(),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
-                  timeStr.toUpperCase(),
+                  '${event.dateText} • ${event.startTime}'.toUpperCase(),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.outline,
                     fontSize: 10,
@@ -336,10 +376,11 @@ class _EventsScreenContent extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
-  Widget _buildUpcomingEvents(BuildContext context, bool isDesktop, bool isTablet) {
+  Widget _buildUpcomingEvents(BuildContext context, bool isDesktop, bool isTablet, List<EventModel> events) {
     final crossAxisCount = isDesktop ? 3 : (isTablet ? 2 : 1);
     final aspectRatio = isDesktop ? 0.75 : (isTablet ? 0.85 : 1.0);
     return Column(
@@ -358,43 +399,24 @@ class _EventsScreenContent extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           childAspectRatio: aspectRatio,
           children: [
-            _buildEventCard(
-              context,
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuDTCs4Ew6tFzt1nRh-5bq9svMtGid7nJ2_Rw56gsMjte8ZY3Ing4kAqlgIjCqO_TJlIuW2zjhPyg4DZOdJNhBlK9W0bqybuec55zfoJCCSsMMiTJZ5Ek_BAB2MOrjukoRemRLT7tIHMQZvrBKvphSxdVhEHJRWMZxN5DtOs1gTSYt7HiyyfkfuqukO-MFeJgP65ru7vaEv5HSF_Y40nmrEEUZLXiWNv2JiLqC1glFI7sEpPvK7w3_Pt-Q2pbM2Yh7tIhsXx0fikVVM',
-              'Mar',
-              '18',
-              'Vedic Chanting Workshop',
-              '10:00 AM - 1:00 PM',
-              'The Lotus Center, Rishikesh',
-            ),
-            _buildEventCard(
-              context,
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuCVbeTpQTeUaCuTOLpBM9uiIsYagvcNLEXOz6-s6YBtnCKLKdgStonN5ZuOLYW-wA1-2hcuH5GVOhL7BJI6Rbdy4wGifVCcQB91-T_8nKyrpTw1w2U-WeOKoyHzGRLSTn5wNLbgpvptkDwdBRXoT9O3dGA4BInOGaCMMJ3D6TzIs2xU0wcFfG6jPucqhJivkeUXufeJBY4w8t37kCJsOF89fhgNs5pxmqxgLS7qcG37my_Q_wKiMSjZt_UX33mFzpHvf-hXCrmUbI0',
-              'Mar',
-              '22',
-              'Spring Kathak Recital',
-              '07:30 PM Onwards',
-              'Royal Opera House',
-            ),
-            _buildEventCard(
-              context,
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuCZ-trqgjaEbqIsoQ-OcuSVuvJvmvu-j3z4EyuIAdCvstBY7KEe-LNW_-3A6abxJOqk9dCwFprdOynMKV0_snDq2MvFGx1wQxUmABVNKesSd0igExXJRvsqsaMoWz44W04Y10R4jjjfV7679NiAfSmuqgzoLp4sINEBndyclc1yu66vbjjhaR-bXoaN6jv7mnrshSYu2zFTYnKUxP9Smh1H6vdtypurfNJ0NO6SUAYk1wQdv_Pg4VwQSXcvC-r5-lClGGzIDRAqW1w',
-              'Mar',
-              '25',
-              'Saraswati Puja Gathering',
-              '09:00 AM Daily',
-              'Community Hall, South Extension',
-            ),
+            for (final event in events) _buildEventCard(context, event),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildEventCard(BuildContext context, String imageUrl, String month, String date, String title, String time, String location) {
+  static const _months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+
+  Widget _buildEventCard(BuildContext context, EventModel event) {
+    final month = _months[event.date.month - 1];
+    final day = event.date.day.toString();
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const EventDetailsScreen()),
+        MaterialPageRoute(builder: (_) => EventDetailsScreen(eventId: event.id)),
       ),
       child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,7 +426,7 @@ class _EventsScreenContent extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               image: DecorationImage(
-                image: CachedNetworkImageProvider(imageUrl),
+                image: CachedNetworkImageProvider(event.imageUrl),
                 fit: BoxFit.cover,
               ),
             ),
@@ -430,7 +452,7 @@ class _EventsScreenContent extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        date,
+                        day,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -442,7 +464,7 @@ class _EventsScreenContent extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          title,
+          event.title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -454,7 +476,7 @@ class _EventsScreenContent extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                time,
+                event.startTime,
                 style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -468,7 +490,7 @@ class _EventsScreenContent extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                location,
+                event.venue,
                 style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12),
                 overflow: TextOverflow.ellipsis,
               ),

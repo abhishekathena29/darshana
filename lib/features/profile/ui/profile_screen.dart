@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/services/temple_repository.dart';
 import '../../../core/session/user_session.dart';
 import '../../temple_profile/ui/temple_profile_screen.dart';
+import '../../temple_profile/ui/edit_temple_screen.dart';
+import '../../saved_temples/ui/saved_temples_screen.dart';
 
 /// Role-aware profile / account screen hosted inside the main shell.
 ///
@@ -44,20 +47,17 @@ class ProfileScreen extends StatelessWidget {
                   icon: Icons.temple_hindu,
                   title: 'Manage temple',
                   subtitle: 'Edit your sanctuary profile, photos & timings.',
+                  onTap: () => _openManageTemple(context, session),
+                ),
+              if (!session.isTemple)
+                _ActionCard(
+                  icon: Icons.bookmark_outline,
+                  title: 'Saved temples',
+                  subtitle: 'Sacred spaces you want to visit.',
                   onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const TempleProfileScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const SavedTemplesScreen()),
                   ),
                 ),
-              _ActionCard(
-                icon: Icons.bookmark_outline,
-                title: session.isTemple ? 'Saved drafts' : 'Saved temples',
-                subtitle: session.isTemple
-                    ? 'Events and posts you are still preparing.'
-                    : 'Sacred spaces you want to visit.',
-                onTap: () {},
-              ),
               _ActionCard(
                 icon: Icons.notifications_outlined,
                 title: 'Notifications',
@@ -72,8 +72,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               OutlinedButton.icon(
-                onPressed: () => Navigator.of(context)
-                    .popUntil((route) => route.isFirst),
+                onPressed: () => context.read<UserSession>().signOut(),
                 icon: const Icon(Icons.logout),
                 label: const Text('Sign out'),
                 style: OutlinedButton.styleFrom(
@@ -89,6 +88,27 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _openManageTemple(BuildContext context, UserSession session) async {
+    final uid = session.uid;
+    if (uid == null) return;
+    final owned = await TempleRepository().watchOwnedBy(uid).first;
+    if (!context.mounted) return;
+    if (owned.isNotEmpty) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => TempleProfileScreen(templeId: owned.first.id)),
+      );
+      return;
+    }
+    final newId = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const EditTempleScreen()),
+    );
+    if (newId != null && context.mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => TempleProfileScreen(templeId: newId)),
+      );
+    }
   }
 }
 

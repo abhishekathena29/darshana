@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../model/chat_message.dart';
 import '../provider/ai_assistant_provider.dart';
 
 class AIAssistantScreen extends StatelessWidget {
@@ -21,7 +22,6 @@ class _AIAssistantContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 800;
     final isSmall = size.width < 360;
     final horizontalPad = isSmall ? 16.0 : 24.0;
 
@@ -30,23 +30,29 @@ class _AIAssistantContent extends StatelessWidget {
       appBar: _buildAppBar(context),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: 24.0),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
-                child: Column(
-                  children: [
-                    _buildGreeting(context),
-                    const SizedBox(height: 32),
-                    _buildSuggestedPrompts(context),
-                    const SizedBox(height: 48),
-                    _buildChatHistory(context, isDesktop),
-                    const SizedBox(height: 120), // Space for the input bar
-                  ],
+          Consumer<AIAssistantProvider>(
+            builder: (context, provider, child) {
+              return SingleChildScrollView(
+                reverse: provider.messages.isNotEmpty,
+                padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: 24.0),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Column(
+                      children: [
+                        if (provider.messages.isEmpty) ...[
+                          _buildGreeting(context),
+                          const SizedBox(height: 32),
+                          _buildSuggestedPrompts(context, provider),
+                        ] else
+                          _buildChatHistory(context, provider),
+                        const SizedBox(height: 120), // Space for the input bar
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
           Positioned(
             bottom: 24,
@@ -101,13 +107,6 @@ class _AIAssistantContent extends StatelessWidget {
           ),
         ],
       ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.notifications_outlined, color: Theme.of(context).colorScheme.outline),
-          onPressed: () {},
-        ),
-        const SizedBox(width: 8),
-      ],
     );
   }
 
@@ -150,20 +149,20 @@ class _AIAssistantContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSuggestedPrompts(BuildContext context) {
+  Widget _buildSuggestedPrompts(BuildContext context, AIAssistantProvider provider) {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
       alignment: WrapAlignment.center,
       children: [
-        _buildPromptChip(context, 'Plan a 2-day trip to Madurai'),
-        _buildPromptChip(context, 'Nearby temples with evening sevas'),
-        _buildPromptChip(context, 'Dress code for Tirupati'),
+        _buildPromptChip(context, 'Plan a 2-day trip to Madurai', provider),
+        _buildPromptChip(context, 'Nearby temples with evening sevas', provider),
+        _buildPromptChip(context, 'Dress code for Tirupati', provider),
       ],
     );
   }
 
-  Widget _buildPromptChip(BuildContext context, String text) {
+  Widget _buildPromptChip(BuildContext context, String text, AIAssistantProvider provider) {
     return ActionChip(
       label: Text(text),
       labelStyle: TextStyle(
@@ -173,16 +172,29 @@ class _AIAssistantContent extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.surface,
       side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      onPressed: () {},
+      onPressed: provider.isSending ? null : () => provider.sendMessage(text),
     );
   }
 
-  Widget _buildChatHistory(BuildContext context, bool isDesktop) {
+  Widget _buildChatHistory(BuildContext context, AIAssistantProvider provider) {
     return Column(
       children: [
-        _buildUserMessage(context, 'Tell me about the best time to visit Madurai Meenakshi Temple and suggest a stay.'),
-        const SizedBox(height: 24),
-        _buildAIResponse(context, isDesktop),
+        for (final message in provider.messages) ...[
+          if (message.role == ChatRole.user)
+            _buildUserMessage(context, message.text)
+          else
+            _buildAIResponse(context, message),
+          const SizedBox(height: 24),
+        ],
+        if (provider.isSending)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
       ],
     );
   }
@@ -221,268 +233,38 @@ class _AIAssistantContent extends StatelessWidget {
     );
   }
 
-  Widget _buildAIResponse(BuildContext context, bool isDesktop) {
+  Widget _buildAIResponse(BuildContext context, ChatMessage message) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final rightMargin = screenWidth < 360 ? 8.0 : 32.0;
+    final errorColor = Theme.of(context).colorScheme.error;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(right: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Text Response
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(24),
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14, height: 1.5),
-                      children: [
-                        const TextSpan(text: 'Madurai is divine throughout the year, but the '),
-                        const TextSpan(text: 'October to March', style: TextStyle(fontWeight: FontWeight.bold)),
-                        const TextSpan(text: ' window offers pleasant weather for temple circumambulation. For your stay, I recommend heritage properties near the Chithirai streets to witness the temple\'s morning vibrations.'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Custom tip: Women usually wear sarees or churidars; traditional attire is appreciated for the inner sanctum.',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Interactive Planning: Temple Cards & Map
-            if (isDesktop)
-              Row(
-                children: [
-                  Expanded(child: _buildTempleCard(context)),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildMapCard(context)),
-                ],
-              )
-            else
-              Column(
-                children: [
-                  _buildTempleCard(context),
-                  const SizedBox(height: 16),
-                  _buildMapCard(context),
-                ],
-              ),
-            const SizedBox(height: 16),
-            // Stay Recommendation
-            _buildStayRecommendation(context),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTempleCard(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 128,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              image: DecorationImage(
-                image: CachedNetworkImageProvider(
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuB4TCv2GLI-N3uZgpDitEt2sbyt3FqRpAn0lVu0RvqduamDW2PR176nnlqsrOnEbrutRHoLNR-aQ1Wz8h_beSjtWokPrY7h0V3zJogzN_JBo9p7zp35cyXyqoJOWlPsfNvDqPw3ylx9zIY0AMXd2OuE5jp3c-3SHwnWAMyKEoUfacP--HaVMuQOzcTWOW-_WayOram9CoSoMcEM5iGIw7AK2OWS-Lj76bXAMinjaM7IF2UXe0_1x3lRnr_aRf2bI4_Go-mFPjZg38A',
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Meenakshi Amman',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'MORNING SEVA 5:00 AM',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'The heart of Madurai, known for its 14 gopurams and thousands of vibrant sculptures.',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontSize: 12,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMapCard(BuildContext context) {
-    return Container(
-      height: 236, // Match approximate height of Temple Card
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3)),
-        image: const DecorationImage(
-          image: CachedNetworkImageProvider(
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuCLspVSauhU2xEtxqpzMpEnQAsUOWadmy6MfjymzjBzNVnoR2EnktVIIEviTnfZT2b-_zrzn3CcSYOsgdlES_8wV_8tdCPiLz_9RfnUmlC8M_qmNywkauFG5IL8bjXC8b81TMHY2nQFBAI4DBSqYm_su70flZxUhwo9_8QWHMocD8rOa5_O-j_PWJtdfDUMg4ZMvUwtiH84Td51-TVBBSipCMPi8xT992q2rvCZHHYx_2NEtVDH48hO8oqHnYIg3QSr23pXPiZOVn8',
-          ),
-          fit: BoxFit.cover,
-          opacity: 0.6,
-        ),
-      ),
-      child: Container(
+        margin: EdgeInsets.only(right: rightMargin),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [Theme.of(context).colorScheme.surface.withOpacity(0.9), Colors.transparent],
+          color: message.isError
+              ? errorColor.withOpacity(0.08)
+              : Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(24),
+            bottomLeft: Radius.circular(24),
+            bottomRight: Radius.circular(24),
+          ),
+          border: Border.all(
+            color: message.isError
+                ? errorColor.withOpacity(0.3)
+                : Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3),
           ),
         ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.location_on, color: Theme.of(context).colorScheme.primary, size: 16),
-                const SizedBox(width: 4),
-                const Text(
-                  'TEMPLE DISTRICT VIEW',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Open in Sacred Maps',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ],
+        child: Text(
+          message.text,
+          style: TextStyle(
+            color: message.isError ? errorColor : Theme.of(context).colorScheme.onSurface,
+            fontSize: 14,
+            height: 1.5,
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildStayRecommendation(BuildContext context) {
-    final isSmall = MediaQuery.of(context).size.width < 360;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: isSmall ? 48 : 64,
-            height: isSmall ? 48 : 64,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: const DecorationImage(
-                image: CachedNetworkImageProvider(
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAta52mYUKVGsc_QJw9jaYHjyGdF33DUHOprC1WGbG0nnnnpbyR31wvRjVrSPxb5z-b0UsdHc3wEKfQs2_u7od_4m9vwpBqPXVONMFflDS7xmHkTKAOorvqSTc_yxtdPhHhHYefvWlkzjsZO1nUsw06-N0xPBD2tVL1h-L5zlh8NxOpQgk_6uTqpr7Ue7zu42EnEIKkICpZqBj236-C506qmIryd-HgLhMq8dMCGFZt_VvxqYQDNoiTKPTfgyXIaSGXYHoAhysEeWo',
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Heritage Madurai',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Recommended: 1.2km from Temple North Gate',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: List.generate(
-                    4,
-                    (index) => Icon(Icons.star, color: Colors.orange.shade400, size: 14),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              minimumSize: Size.zero,
-            ),
-            child: const Text('BOOK', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
-          ),
-        ],
       ),
     );
   }

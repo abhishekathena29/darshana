@@ -31,7 +31,6 @@ class MorphingTopNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onSelect;
   final String brand;
-  final VoidCallback? onNotifications;
   final VoidCallback? onAvatar;
   final String? avatarUrl;
 
@@ -42,7 +41,6 @@ class MorphingTopNav extends StatelessWidget {
     required this.currentIndex,
     required this.onSelect,
     this.brand = 'Darshana',
-    this.onNotifications,
     this.onAvatar,
     this.avatarUrl,
   });
@@ -100,7 +98,6 @@ class MorphingTopNav extends StatelessWidget {
                         destinations: destinations,
                         currentIndex: currentIndex,
                         onSelect: onSelect,
-                        onNotifications: onNotifications,
                         onAvatar: onAvatar,
                         avatarUrl: avatarUrl,
                       ),
@@ -180,25 +177,28 @@ class _TabItem extends StatelessWidget {
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(data.icon,
-                size: 20, color: selected ? active : inactive),
-            const SizedBox(height: 2),
-            Text(
-              data.label.toUpperCase(),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.8,
-                color: selected ? active : inactive,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(data.icon,
+                  size: 20, color: selected ? active : inactive),
+              const SizedBox(height: 2),
+              Text(
+                data.label.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.8,
+                  color: selected ? active : inactive,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -211,7 +211,6 @@ class _ExpandedGrid extends StatelessWidget {
   final List<NavDestinationData> destinations;
   final int currentIndex;
   final ValueChanged<int> onSelect;
-  final VoidCallback? onNotifications;
   final VoidCallback? onAvatar;
   final String? avatarUrl;
 
@@ -220,7 +219,6 @@ class _ExpandedGrid extends StatelessWidget {
     required this.destinations,
     required this.currentIndex,
     required this.onSelect,
-    this.onNotifications,
     this.onAvatar,
     this.avatarUrl,
   });
@@ -256,12 +254,6 @@ class _ExpandedGrid extends StatelessWidget {
                     color: theme.colorScheme.primary,
                   ),
                 ),
-              ),
-              IconButton(
-                visualDensity: VisualDensity.compact,
-                onPressed: onNotifications,
-                icon: Icon(Icons.notifications_outlined,
-                    color: theme.colorScheme.primary),
               ),
             ],
           ),

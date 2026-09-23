@@ -1,28 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../core/models/temple_model.dart';
+import '../../../core/services/temple_repository.dart';
+import '../../../core/session/user_session.dart';
 import '../provider/temple_profile_provider.dart';
+import 'edit_temple_screen.dart';
 
 class TempleProfileScreen extends StatelessWidget {
-  const TempleProfileScreen({super.key});
+  final String templeId;
+  const TempleProfileScreen({super.key, required this.templeId});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => TempleProfileProvider(),
-      child: const _TempleProfileContent(),
+      child: StreamBuilder<TempleModel?>(
+        stream: TempleRepository().watchById(templeId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
+          final temple = snapshot.data;
+          if (temple == null) {
+            return const Scaffold(body: Center(child: Text('This temple could not be found.')));
+          }
+          return _TempleProfileContent(temple: temple);
+        },
+      ),
     );
   }
 }
 
 class _TempleProfileContent extends StatelessWidget {
-  const _TempleProfileContent();
+  final TempleModel temple;
+  const _TempleProfileContent({required this.temple});
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 800;
     final isSmall = size.width < 360;
+    final session = context.watch<UserSession>();
+    final isOwner = session.uid != null && session.uid == temple.ownerId;
+    final isSaved = session.savedTempleIds.contains(temple.id);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -30,7 +52,7 @@ class _TempleProfileContent extends StatelessWidget {
         children: [
           CustomScrollView(
             slivers: [
-              _buildSliverAppBar(context),
+              _buildSliverAppBar(context, isOwner: isOwner, isSaved: isSaved, session: session),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 120.0), // space for bottom nav and fab
@@ -45,7 +67,7 @@ class _TempleProfileContent extends StatelessWidget {
               ),
             ],
           ),
-          
+
           // Floating Action Bottom Call
           Positioned(
             bottom: isDesktop ? 48 : 100, // adjust for bottom nav
@@ -77,7 +99,7 @@ class _TempleProfileContent extends StatelessWidget {
                     ],
                   ),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => _openOfficialPortal(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
@@ -109,7 +131,9 @@ class _TempleProfileContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Redirecting to official TTD booking portal',
+                  temple.officialPortal.isEmpty
+                      ? 'This temple hasn\'t added a booking link yet'
+                      : 'Redirecting to ${temple.officialPortal}',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.outline,
                     fontSize: 10,
@@ -125,7 +149,29 @@ class _TempleProfileContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context) {
+  Future<void> _openOfficialPortal(BuildContext context) async {
+    final portal = temple.officialPortal.trim();
+    if (portal.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This temple hasn\'t added a booking link yet.')),
+      );
+      return;
+    }
+    final uri = Uri.tryParse(portal.startsWith('http') ? portal : 'https://$portal');
+    if (uri == null || !await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open the booking link.')),
+      );
+    }
+  }
+
+  Widget _buildSliverAppBar(
+    BuildContext context, {
+    required bool isOwner,
+    required bool isSaved,
+    required UserSession session,
+  }) {
     final size = MediaQuery.of(context).size;
     final expandedHeight = (size.height * 0.55).clamp(360.0, 530.0);
     return SliverAppBar(
@@ -146,27 +192,28 @@ class _TempleProfileContent extends StatelessWidget {
             ),
       ),
       actions: [
-        IconButton(
-          icon: Icon(Icons.notifications_outlined, color: Theme.of(context).colorScheme.primary),
-          onPressed: () {},
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuCBZXGls2w8mKonx4hlXsbhV3uwvoUDg494ZpJ2TkvU8IUti_Nr11dqEA5atHdthVX2wfG2utwpiwd5E1nxnqyTyWdcYSVmJp-K74Kf1RXIDNnoQ7MY9lutllvNoLrb78r_CutnqroxKakHM1cUT9WB2cE5dFZ2-yOSSQAWgMyOK4RPLcCGAzIW6FQTtIiFO0uP11lS72L2HC36lfjYr-kYTIXVhyGBArQeeryceLK0Ng7eVQF-AYxE5rI13_krFX5DISc0R62KSUc',
+        if (isOwner)
+          IconButton(
+            icon: Icon(Icons.edit_outlined, color: Theme.of(context).colorScheme.primary),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => EditTempleScreen(templeId: temple.id)),
             ),
-            radius: 18,
+          )
+        else
+          IconButton(
+            icon: Icon(
+              isSaved ? Icons.bookmark : Icons.bookmark_outline,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            onPressed: () => session.toggleSavedTemple(temple.id),
           ),
-        ),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.expand,
           children: [
             CachedNetworkImage(
-              imageUrl:
-                  'https://lh3.googleusercontent.com/aida-public/AB6AXuBEIysNsnaCmGG66ptZVYbNLQMpvUp5Rum0BtwLES3_dAy33tJgiO0JXyEKzzHQDOla1LInCvpJpMtPUPgAzZAE5jaba3OmZ8fUfIN1MazcsbiOYwXODxXiqOqcNe9HbKkNFjMkCMquR8D82CyVA4dJmPuXXDtWwQOLfu15Xn9v5l4nXV-MfcL3YjBcFpFDUp-V7UH8p1aQ6juOzICo9s59WUz11ETiUF-KB5u_iGawT92gBWlTCPqCJUCl-EOAjsmTqEtxyTSgYO4',
+              imageUrl: temple.imageUrl,
               fit: BoxFit.cover,
             ),
             Container(
@@ -185,22 +232,23 @@ class _TempleProfileContent extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Presiding Deity: Lord Venkateswara',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.white.withOpacity(0.9),
-                          fontStyle: FontStyle.italic,
-                          fontSize: size.width < 360 ? 13 : null,
-                        ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  if (temple.deity.isNotEmpty)
+                    Text(
+                      'Presiding Deity: ${temple.deity}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Colors.white.withOpacity(0.9),
+                            fontStyle: FontStyle.italic,
+                            fontSize: size.width < 360 ? 13 : null,
+                          ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   const SizedBox(height: 8),
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Sri Padmavathi Amman Temple',
+                      temple.name,
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -237,13 +285,13 @@ class _TempleProfileContent extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: _buildInfoColumn(context, Icons.schedule, 'TIMINGS', '5:30 AM - 9:00 PM', true),
+                child: _buildInfoColumn(context, Icons.schedule, 'TIMINGS', temple.timings, true),
               ),
               Expanded(
-                child: _buildInfoColumn(context, Icons.checkroom, 'DRESS CODE', 'Traditional Only', true),
+                child: _buildInfoColumn(context, Icons.checkroom, 'DRESS CODE', temple.dressCode, true),
               ),
               Expanded(
-                child: _buildInfoColumn(context, Icons.location_on, 'LOCATION', 'Tiruchanur', false),
+                child: _buildInfoColumn(context, Icons.location_on, 'LOCATION', temple.location, false),
               ),
             ],
           ),
@@ -383,70 +431,77 @@ class _TempleProfileContent extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'The temple is dedicated to Goddess Padmavathi, the consort of Lord Venkateswara. Legend has it that she manifested in a golden lotus within the temple tank. Pilgrims traditionally visit this sacred site before proceeding to Tirumala.',
+            temple.significance.isEmpty
+                ? 'The temple administrator hasn\'t added a description yet.'
+                : temple.significance,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
               height: 1.6,
               fontSize: 16,
             ),
           ),
-          const SizedBox(height: 24),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'HISTORY',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          letterSpacing: 1.5,
-                        ),
+          if (temple.history.isNotEmpty || temple.architecture.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (temple.history.isNotEmpty)
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      const SizedBox(height: 8),
-                      const Text('Ancient structures dating back to the Pallava era, reflecting Dravidian architectural mastery.', style: TextStyle(fontSize: 14)),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'ARCHITECTURE',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          letterSpacing: 1.5,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'HISTORY',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(temple.history, style: const TextStyle(fontSize: 14)),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      const Text('Intricate stone carvings and a magnificent seven-tier Rajagopuram facing the sunrise.', style: TextStyle(fontSize: 14)),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ),
+                if (temple.history.isNotEmpty && temple.architecture.isNotEmpty)
+                  const SizedBox(width: 16),
+                if (temple.architecture.isNotEmpty)
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'ARCHITECTURE',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(temple.architecture, style: const TextStyle(fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -482,31 +537,38 @@ class _TempleProfileContent extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 24),
-              _buildProTipItem(context, Icons.check_circle_outline, 'Carry a reusable water bottle; hydration points are available.'),
-              const SizedBox(height: 16),
-              _buildProTipItem(context, Icons.block, 'Photography is strictly prohibited inside the sanctum.'),
-              const SizedBox(height: 16),
-              _buildProTipItem(context, Icons.pets, 'Shoe counters are free and located at the South entrance.'),
-              const SizedBox(height: 32),
-              Divider(color: Colors.white.withOpacity(0.2)),
-              const SizedBox(height: 24),
-              Text(
-                'OFFICIAL PORTAL',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
+              if (temple.proTips.isEmpty)
+                Text(
+                  'No pro-tips added yet.',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8)),
+                )
+              else
+                for (var i = 0; i < temple.proTips.length; i++) ...[
+                  if (i > 0) const SizedBox(height: 16),
+                  _buildProTipItem(context, Icons.check_circle_outline, temple.proTips[i]),
+                ],
+              if (temple.officialPortal.isNotEmpty) ...[
+                const SizedBox(height: 32),
+                Divider(color: Colors.white.withOpacity(0.2)),
+                const SizedBox(height: 24),
+                Text(
+                  'OFFICIAL PORTAL',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'tirumala.org',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontStyle: FontStyle.italic,
-                    ),
-              ),
+                const SizedBox(height: 4),
+                Text(
+                  temple.officialPortal,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+              ],
             ],
           ),
         ],
@@ -551,17 +613,31 @@ class _TempleProfileContent extends StatelessWidget {
           Wrap(
             spacing: 24,
             runSpacing: 24,
-            children: [
-              _buildFacilityItem(context, Icons.accessible, 'ACCESS', 'Ramp & Lift'),
-              _buildFacilityItem(context, Icons.local_parking, 'PARKING', 'Secured Lot'),
-              _buildFacilityItem(context, Icons.restaurant, 'FOOD', 'Annaprasadam'),
-              _buildFacilityItem(context, Icons.wifi, 'DIGITAL', 'Public WiFi'),
-            ],
+            children: temple.facilities.isEmpty
+                ? [
+                    _buildFacilityItem(context, Icons.accessible, 'ACCESS', 'Ramp & Lift'),
+                    _buildFacilityItem(context, Icons.local_parking, 'PARKING', 'Secured Lot'),
+                    _buildFacilityItem(context, Icons.restaurant, 'FOOD', 'Annaprasadam'),
+                    _buildFacilityItem(context, Icons.wifi, 'DIGITAL', 'Public WiFi'),
+                  ]
+                : temple.facilities
+                    .map((f) => _buildFacilityItem(context, _facilityIcon(f.icon), f.title, f.subtitle))
+                    .toList(),
           ),
         ],
       ),
     );
   }
+
+  static const _facilityIcons = <String, IconData>{
+    'accessible': Icons.accessible,
+    'parking': Icons.local_parking,
+    'food': Icons.restaurant,
+    'wifi': Icons.wifi,
+    'info': Icons.info_outline,
+  };
+
+  IconData _facilityIcon(String key) => _facilityIcons[key] ?? Icons.info_outline;
 
   Widget _buildFacilityItem(BuildContext context, IconData icon, String title, String subtitle) {
     final screenWidth = MediaQuery.of(context).size.width;

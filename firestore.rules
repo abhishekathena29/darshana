@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isTempleUser() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'temple';
+    }
+
+    // Each user's own profile: role, saved temples, display name.
+    match /users/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Temples: browsable by any signed-in user; only their owning temple
+    // account may create/edit/delete.
+    match /temples/{templeId} {
+      allow read: if isSignedIn();
+      allow create: if isTempleUser() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // Events: browsable by any signed-in user; only their owning temple
+    // account may create/edit/delete.
+    match /events/{eventId} {
+      allow read: if isSignedIn();
+      allow create: if isTempleUser() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      // A devotee "books" an event by creating their own attendee doc.
+      match /attendees/{attendeeId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.auth.uid == attendeeId;
+        allow delete: if isSignedIn() && request.auth.uid == attendeeId;
+      }
+
+      // Comments: anyone signed in can read/post as themselves.
+      match /comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      }
+    }
+
+    // Curated multi-stop itineraries: browsable by any signed-in user;
+    // authored by temple accounts.
+    match /sacredPaths/{pathId} {
+      allow read: if isSignedIn();
+      allow write: if isTempleUser();
+    }
+
+    // App-wide config (e.g. the Groq API key/model for the AI assistant).
+    // Readable by signed-in users, but never writable from a client — set
+    // this via the Firebase console.
+    match /config/{doc} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+  }
+}

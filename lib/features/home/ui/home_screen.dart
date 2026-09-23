@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/models/event_model.dart';
+import '../../../core/models/temple_model.dart';
+import '../../../core/services/event_repository.dart';
+import '../../../core/services/temple_repository.dart';
 import '../provider/home_provider.dart';
 import '../../event_details/ui/event_details_screen.dart';
 import '../../temple_profile/ui/temple_profile_screen.dart';
@@ -29,23 +33,41 @@ class _HomeScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 800;
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(height: topInset + 12),
-          _buildHeroSection(context, isDesktop),
-          _buildSearchAndFilters(context, isDesktop),
-          _buildFeaturedTemples(context, isDesktop),
-          _buildCulturalPerformances(context),
-          _buildSacredEvents(context, isDesktop),
-          _buildNewsletter(context),
-          const SizedBox(height: 40),
-        ],
-      ),
+    return StreamBuilder<List<TempleModel>>(
+      stream: TempleRepository().watchAll(),
+      builder: (context, templeSnapshot) {
+        final temples = templeSnapshot.data ?? const <TempleModel>[];
+        return StreamBuilder<List<EventModel>>(
+          stream: EventRepository().watchAll(),
+          builder: (context, eventSnapshot) {
+            final upcoming = (eventSnapshot.data ?? const <EventModel>[])
+                .where((e) => e.isUpcoming)
+                .toList()
+              ..sort((a, b) => a.date.compareTo(b.date));
+            final performances = upcoming.where((e) => e.category == 'Music' || e.category == 'Dance').toList();
+            final sacredEvents = upcoming.where((e) => e.category == 'Poojas' || e.category == 'Festivals').toList();
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: topInset + 12),
+                  _buildHeroSection(context, isDesktop, upcoming.isEmpty ? null : upcoming.first),
+                  _buildSearchAndFilters(context, isDesktop),
+                  _buildFeaturedTemples(context, isDesktop, temples),
+                  _buildCulturalPerformances(context, performances),
+                  _buildSacredEvents(context, isDesktop, sacredEvents),
+                  _buildNewsletter(context),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
-  Widget _buildHeroSection(BuildContext context, bool isDesktop) {
+  Widget _buildHeroSection(BuildContext context, bool isDesktop, EventModel? heroEvent) {
     final size = MediaQuery.of(context).size;
     final isSmall = size.width < 360;
     final heroHeight = isDesktop ? 400.0 : (size.height < 700 ? 240.0 : 300.0);
@@ -58,9 +80,11 @@ class _HomeScreenContent extends StatelessWidget {
         height: heroHeight,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-          image: const DecorationImage(
+          image: DecorationImage(
             image: CachedNetworkImageProvider(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuBEwfEb_TRm96ELULdyI2I2cTdefNsWRpsTyyge_N2vK-HFsNktvj6cc9Qamn5RPidDtjlIDHzEWnPdEVyi2hWu7GVXTC7wPkLCLADMgg34lNPIPMspjWu4v_zPnxLLMis6jH1OX4P3Qbgy2lThqswZ7cOCZQNsrwWwLHBWCba20ymb65IGmrlfVKmkiTlJ_WEGIqZLr7mIO-5We4TDc_se-KZI1Vg13XOmFRye4F_b-yW8XMUexiLA-8eHOhA_QrEJf9EKcXv4Q8s',
+              heroEvent?.imageUrl.isNotEmpty == true
+                  ? heroEvent!.imageUrl
+                  : 'https://lh3.googleusercontent.com/aida-public/AB6AXuBEwfEb_TRm96ELULdyI2I2cTdefNsWRpsTyyge_N2vK-HFsNktvj6cc9Qamn5RPidDtjlIDHzEWnPdEVyi2hWu7GVXTC7wPkLCLADMgg34lNPIPMspjWu4v_zPnxLLMis6jH1OX4P3Qbgy2lThqswZ7cOCZQNsrwWwLHBWCba20ymb65IGmrlfVKmkiTlJ_WEGIqZLr7mIO-5We4TDc_se-KZI1Vg13XOmFRye4F_b-yW8XMUexiLA-8eHOhA_QrEJf9EKcXv4Q8s',
             ),
             fit: BoxFit.cover,
           ),
@@ -89,7 +113,7 @@ class _HomeScreenContent extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Text(
-                  'FEATURED FESTIVAL',
+                  'FEATURED EVENT',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                     fontWeight: FontWeight.bold,
@@ -99,7 +123,7 @@ class _HomeScreenContent extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Grand Brahmotsavam at Tirumala',
+                heroEvent?.title ?? 'No upcoming events yet',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontStyle: FontStyle.italic,
@@ -110,16 +134,22 @@ class _HomeScreenContent extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 16),
-              if (isDesktop)
+              if (isDesktop && heroEvent != null && heroEvent.description.isNotEmpty)
                 Text(
-                  'Experience the celestial aura and timeless traditions during the nine-day spiritual celebration of the Lord of Seven Hills.',
+                  heroEvent.description,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyLarge?.copyWith(color: Colors.white70),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: heroEvent == null
+                    ? null
+                    : () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => EventDetailsScreen(eventId: heroEvent.id)),
+                        ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -232,7 +262,18 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturedTemples(BuildContext context, bool isDesktop) {
+  Widget _buildFeaturedTemples(BuildContext context, bool isDesktop, List<TempleModel> temples) {
+    if (temples.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+        child: Text(
+          'No temples have been added yet.',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      );
+    }
+    final large = temples.first;
+    final rest = temples.skip(1).take(2).toList();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
       child: Column(
@@ -285,73 +326,33 @@ class _HomeScreenContent extends StatelessWidget {
                 children: [
                   Expanded(
                     flex: 7,
-                    child: _buildTempleCard(
-                      context,
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuAC8-zMkY0RUdyrxAovlboegmsa1i850vK4UYOW1npJYZ8qpzn8VVFvubu6NobRMJYw_D8ddNSNKWo9geBdFjGra9OC_Numy_5HwrqcNFc90RvxDf_H5YDEhAE0F0IozP9XknQqHEtG8vy7zoidQHyel4kucnXORcpJvuGUvn-lu6bmptUoL4uzXW54soy1wL6ZOOWd2JL-zpeFZHeI_Zcr4XFV3Ks_Zi9OPPcmqU_Rscp4gSGSjPoyLDt6OXJsj2UN1xMKSgDpO20',
-                      'Meenakshi Amman',
-                      'Madurai, Tamil Nadu',
-                    ),
+                    child: _buildTempleCard(context, large),
                   ),
-                  const SizedBox(width: 24),
-                  Expanded(
-                    flex: 5,
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: _buildTempleCard(
-                            context,
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuCH2nCQECscyLgZMmoJxNX-FTOybPTVHjYNo43ArqS1wd-UjwdMZjzpKdzCUd7Z--Q51XmYQuye8I8eaTpqn5RzCC5-mi2frEs6MSFblQZM36E7xzLEVhIcBRhCCdF4n6XClvgXfjXg5mWd0fW9Q9lEtZ05jF-Di1lZVIJwF4_iCywIuyit0I8eThbGoSR4qU9dTRyBEN6kI2CdzMtSgJnksrRHwR2I0P6QCH7TCd1rMf0QnEwTeR2xnsVejYQwH7s4_Gb8QepsZ8M',
-                            'Golden Temple',
-                            'Amritsar, Punjab',
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Expanded(
-                          child: _buildTempleCard(
-                            context,
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuA63TArA23Q3cQ-yzPFV5WOp54WPwH12_lC_fXuIbT7zXKRFA2TgSza6Rq6MEGzx0oFSKKKMOt_cTgmtwUMNKVTcyjyrXqC8WRO6LrGMZDHAG0KSzSvVA6gTloLIpWHXemU2_7q_22ObsO2NTYbLdToCERe10t7JKCrfmQjejEDZcamO-qL9Jh0L6V9LooYKrMz3uq2kltqZIZNShLNsxrDAZ2dfKnzp2kG5OagStmMsetyXEyUswKrDQcQJSeP7iy1fceo8MWr_EE',
-                            'Brihadisvara',
-                            'Thanjavur, Tamil Nadu',
-                          ),
-                        ),
-                      ],
+                  if (rest.isNotEmpty) ...[
+                    const SizedBox(width: 24),
+                    Expanded(
+                      flex: 5,
+                      child: Column(
+                        children: [
+                          for (var i = 0; i < rest.length; i++) ...[
+                            if (i > 0) const SizedBox(height: 24),
+                            Expanded(child: _buildTempleCard(context, rest[i])),
+                          ],
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             )
           else
             Column(
               children: [
-                SizedBox(
-                  height: 400,
-                  child: _buildTempleCard(
-                    context,
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAC8-zMkY0RUdyrxAovlboegmsa1i850vK4UYOW1npJYZ8qpzn8VVFvubu6NobRMJYw_D8ddNSNKWo9geBdFjGra9OC_Numy_5HwrqcNFc90RvxDf_H5YDEhAE0F0IozP9XknQqHEtG8vy7zoidQHyel4kucnXORcpJvuGUvn-lu6bmptUoL4uzXW54soy1wL6ZOOWd2JL-zpeFZHeI_Zcr4XFV3Ks_Zi9OPPcmqU_Rscp4gSGSjPoyLDt6OXJsj2UN1xMKSgDpO20',
-                    'Meenakshi Amman',
-                    'Madurai, Tamil Nadu',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 300,
-                  child: _buildTempleCard(
-                    context,
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuCH2nCQECscyLgZMmoJxNX-FTOybPTVHjYNo43ArqS1wd-UjwdMZjzpKdzCUd7Z--Q51XmYQuye8I8eaTpqn5RzCC5-mi2frEs6MSFblQZM36E7xzLEVhIcBRhCCdF4n6XClvgXfjXg5mWd0fW9Q9lEtZ05jF-Di1lZVIJwF4_iCywIuyit0I8eThbGoSR4qU9dTRyBEN6kI2CdzMtSgJnksrRHwR2I0P6QCH7TCd1rMf0QnEwTeR2xnsVejYQwH7s4_Gb8QepsZ8M',
-                    'Golden Temple',
-                    'Amritsar, Punjab',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 300,
-                  child: _buildTempleCard(
-                    context,
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuA63TArA23Q3cQ-yzPFV5WOp54WPwH12_lC_fXuIbT7zXKRFA2TgSza6Rq6MEGzx0oFSKKKMOt_cTgmtwUMNKVTcyjyrXqC8WRO6LrGMZDHAG0KSzSvVA6gTloLIpWHXemU2_7q_22ObsO2NTYbLdToCERe10t7JKCrfmQjejEDZcamO-qL9Jh0L6V9LooYKrMz3uq2kltqZIZNShLNsxrDAZ2dfKnzp2kG5OagStmMsetyXEyUswKrDQcQJSeP7iy1fceo8MWr_EE',
-                    'Brihadisvara',
-                    'Thanjavur, Tamil Nadu',
-                  ),
-                ),
+                SizedBox(height: 400, child: _buildTempleCard(context, large)),
+                for (final temple in rest) ...[
+                  const SizedBox(height: 16),
+                  SizedBox(height: 300, child: _buildTempleCard(context, temple)),
+                ],
               ],
             ),
         ],
@@ -359,21 +360,16 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildTempleCard(
-    BuildContext context,
-    String imageUrl,
-    String title,
-    String location,
-  ) {
+  Widget _buildTempleCard(BuildContext context, TempleModel temple) {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const TempleProfileScreen()),
+        MaterialPageRoute(builder: (_) => TempleProfileScreen(templeId: temple.id)),
       ),
       child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40),
         image: DecorationImage(
-          image: CachedNetworkImageProvider(imageUrl),
+          image: CachedNetworkImageProvider(temple.imageUrl),
           fit: BoxFit.cover,
         ),
       ),
@@ -392,7 +388,7 @@ class _HomeScreenContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              temple.name,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -404,7 +400,7 @@ class _HomeScreenContent extends StatelessWidget {
                 const Icon(Icons.location_on, color: Colors.white70, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  location,
+                  temple.location,
                   style: const TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
@@ -416,7 +412,8 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCulturalPerformances(BuildContext context) {
+  Widget _buildCulturalPerformances(BuildContext context, List<EventModel> performances) {
+    if (performances.isEmpty) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -445,37 +442,15 @@ class _HomeScreenContent extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 380,
+          height: 420,
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             children: [
-              _buildPerformanceCard(
-                context,
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuAGMEp4Hy7LocA-Jbs1JA9gwrhwHpPQlf7P35k00XW4PyN0gFC3mRP49dtcr4fet9WUSUOhFolnSSwutNOgy_bjucl_XJDyrXTab1gttAUU6t66To7b3MlUA64oEJFj8YeWJ3mEFHEWRydtOqpv0cM6Y0s49eujgURaVESFfze3QkmSQKT15pvzMhqKgcjj2RxGPznmKDeFKh8unTLTLC9qkHWlBdd7Ikv2sTUNKxab6jZeX8WopNLCgrtVrzZCU_ikSLGQzSL5eLQ',
-                'Classical Vocal',
-                'LIVE',
-                'Smt. Aruna Sairam',
-                'Oct 24 • 6:30 PM • Music Academy',
-              ),
-              const SizedBox(width: 24),
-              _buildPerformanceCard(
-                context,
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuC8xGTH7J6s3f6g0qkIMzyL5-YsdzD-SUbNcm4RNa6yAC-JqRJE5OTQtBMR28Jo032kR8Hq8LuGNLC5Q3dH7vANnXKhpFkBDXfkLZOHy6HtJpFf-qGSjTKuQs-wA6H7QlbkGuIa4G7iO17J155Gt1y9kxpWANy9l-2DnPL5KTuFlc_ihGZU7inoSJlvkWvEipkQhc_6O32I93YMd_mf8NUCv59dK_vi6VRBD4CZ2AOJ7zzznEFKGBq0TvKnlaKEewqeDr2Wq0VjVoc',
-                'Sitar Symphony',
-                'PREMIUM',
-                'Pandit Ravi Shankar Series',
-                'Oct 26 • 7:00 PM • NCPA Mumbai',
-              ),
-              const SizedBox(width: 24),
-              _buildPerformanceCard(
-                context,
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuAP-YR_qg_IRjhs0WlY12EdugvDzhzwaWpBhr9OhqOZBqZg8ZnfjJIbPquLutCEjOcdmviTe47CiY6_eALrcURT-vUovA4Bf00BzYd9MbuzSA2ksamcmEt1gz2NJAZ4gr-LB-pJ9vtoU1MUcYs_skXMjFYBcm8tfUKEvwQaQPMjqN_iCvpN-kEYMyIfW3T5B5x_RXUTo6Liou0dEmB2rsi5DrH92qxGLTdedOfKddv0d3MTtor_2Oba3me1OMkl3p0i46LXw5yzivg',
-                'Odissi Recital',
-                'LIMITED',
-                'Nrityagram Ensemble',
-                'Oct 28 • 5:45 PM • Bangalore Palace',
-              ),
+              for (var i = 0; i < performances.length; i++) ...[
+                if (i > 0) const SizedBox(width: 24),
+                _buildPerformanceCard(context, performances[i]),
+              ],
             ],
           ),
         ),
@@ -483,14 +458,7 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildPerformanceCard(
-    BuildContext context,
-    String imageUrl,
-    String title,
-    String tag,
-    String subtitle,
-    String timeStr,
-  ) {
+  Widget _buildPerformanceCard(BuildContext context, EventModel event) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth < 360 ? screenWidth - 64 : 320.0;
     return Container(
@@ -515,7 +483,7 @@ class _HomeScreenContent extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               image: DecorationImage(
-                image: CachedNetworkImageProvider(imageUrl),
+                image: CachedNetworkImageProvider(event.imageUrl),
                 fit: BoxFit.cover,
               ),
             ),
@@ -526,7 +494,7 @@ class _HomeScreenContent extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  title,
+                  event.title,
                   style: Theme.of(
                     context,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -541,7 +509,7 @@ class _HomeScreenContent extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  tag,
+                  event.category.toUpperCase(),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onTertiaryContainer,
                     fontSize: 10,
@@ -553,7 +521,9 @@ class _HomeScreenContent extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            subtitle,
+            event.description.isNotEmpty ? event.description : event.venue,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontStyle: FontStyle.italic,
@@ -570,7 +540,7 @@ class _HomeScreenContent extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  timeStr,
+                  '${event.dateText} • ${event.startTime} • ${event.venue}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.outline,
@@ -582,7 +552,9 @@ class _HomeScreenContent extends StatelessWidget {
           ),
           const Spacer(),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => EventDetailsScreen(eventId: event.id)),
+            ),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(
@@ -605,30 +577,9 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSacredEvents(BuildContext context, bool isDesktop) {
-    final items = [
-      _buildSacredEventItem(
-        context,
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDK3sOcuTKYJsdselZepRaVy1_tEFgJmmix7NnBH8pXKmsZU5nJ-LBW6Bz61cj6_v9DUDAOPy3cvpXMm-5UTRtO6_DwZ0ONIO9NZv949VYAEiFpurtvfeCoEgkziTtjcuu1gF02pa2qc72jzYJ6EtRCNWEGPtUw_W9pDVN8a7jRE_mjipVLvbM4IWqPKdlccIkmUv_ANAplt6XIYSvdqtd5CBeerjNS85ZsD0788BVKwYq_wV31zyJQXJnYk0zYSFlpvN1bouyhJRo',
-        'OCT 24 • TUESDAY',
-        'Vasantotsavam',
-        'The Spring Festival ritual at Kapaleeshwarar Temple.',
-      ),
-      _buildSacredEventItem(
-        context,
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuARfKc8XTKpZdjSbsSuotZYZVApfi6GPXYFO_21VAT659DXB8TUPmwLh4z_eVsJB8brquOau3H0DsvltHSB3ssUMlQ7VwvV9156r8mA85N083uciVy1te01H84VCoa_ywal66EcvFpI4U_rDAt1jKF_KLlfDTscALbP86hhxu9_evsQZx-49vxbawgvpzeuECzND7b_JTZaR5aGjQ-u25czpzazESKHayeavGxbQGdK_U2md7A9GahNl7TD8l-Krxy5Y731_SKTuRQ',
-        'OCT 26 • THURSDAY',
-        'Abhishekam Ceremony',
-        'Sacred bathing ritual for world peace and prosperity.',
-      ),
-      _buildSacredEventItem(
-        context,
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBIE4Io5DxoaWpj6rPfOj7ys9mHFiRZTjtcdMH5WRRbsZD-z5VD9IsRAZWY55d5c9t6MTDvg_V6RWoVOP8lDUYcRRGMxZRokqf4ydU4wm12emePGxK9ZNSkB48oqMyW3iWSjRZxEtAoQIe_ayOI1tpHQNfgUitoL3FXBxPYveQLvqIJApsekkDbGfj2HVlKTI2o7rCGi2zEoNgH_xKZyWY_0dRfY0db4p8CBUqCr1rrDOTo73nV1d9VQK9KD-vRFC2x8FlKUF9UNNA',
-        'OCT 28 • SATURDAY',
-        'Srimad Ramayana Play',
-        'Traditional shadow puppetry retelling the epic saga.',
-      ),
-    ];
+  Widget _buildSacredEvents(BuildContext context, bool isDesktop, List<EventModel> events) {
+    if (events.isEmpty) return const SizedBox.shrink();
+    final items = [for (final e in events) _buildSacredEventItem(context, e)];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
@@ -680,16 +631,10 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSacredEventItem(
-    BuildContext context,
-    String imageUrl,
-    String dateText,
-    String title,
-    String subtitle,
-  ) {
+  Widget _buildSacredEventItem(BuildContext context, EventModel event) {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const EventDetailsScreen()),
+        MaterialPageRoute(builder: (_) => EventDetailsScreen(eventId: event.id)),
       ),
       child: Container(
       padding: const EdgeInsets.all(16),
@@ -707,7 +652,7 @@ class _HomeScreenContent extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               image: DecorationImage(
-                image: CachedNetworkImageProvider(imageUrl),
+                image: CachedNetworkImageProvider(event.imageUrl),
                 fit: BoxFit.cover,
               ),
             ),
@@ -718,7 +663,7 @@ class _HomeScreenContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  dateText,
+                  event.dateText,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
                     fontSize: 10,
@@ -728,14 +673,14 @@ class _HomeScreenContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  title,
+                  event.title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle,
+                  event.description.isNotEmpty ? event.description : event.venue,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 12,

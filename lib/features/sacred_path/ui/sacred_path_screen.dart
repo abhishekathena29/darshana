@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/models/sacred_path_model.dart';
+import '../../../core/services/sacred_path_repository.dart';
 import '../provider/sacred_path_provider.dart';
 
 class SacredPathScreen extends StatelessWidget {
@@ -30,30 +32,44 @@ class _SacredPathContent extends StatelessWidget {
     final isSmall = size.width < 360;
     final horizontalPad = isDesktop ? 64.0 : (isSmall ? 16.0 : 24.0);
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.only(
-        top: topInset + 24,
-        left: horizontalPad,
-        right: horizontalPad,
-        bottom: 40,
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1024),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(context),
-              const SizedBox(height: 64),
-              _buildPathTimeline(context, isDesktop),
-            ],
+    return StreamBuilder<SacredPathModel?>(
+      stream: SacredPathRepository().watchFeatured(),
+      builder: (context, snapshot) {
+        final path = snapshot.data;
+        return SingleChildScrollView(
+          padding: EdgeInsets.only(
+            top: topInset + 24,
+            left: horizontalPad,
+            right: horizontalPad,
+            bottom: 40,
           ),
-        ),
-      ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1024),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(context, path),
+                  const SizedBox(height: 64),
+                  if (path == null || path.stops.isEmpty)
+                    Text(
+                      snapshot.connectionState == ConnectionState.waiting
+                          ? 'Loading your journey...'
+                          : 'No sacred path has been published yet.',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    )
+                  else
+                    _buildPathTimeline(context, isDesktop, path),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, SacredPathModel? path) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -70,7 +86,7 @@ class _SacredPathContent extends StatelessWidget {
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
           child: Text(
-            'The Southern Trail',
+            path?.title ?? 'The Southern Trail',
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   height: 1.1,
@@ -79,7 +95,9 @@ class _SacredPathContent extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Text(
-          'A curated spiritual itinerary traversing the ancient Dravidian architectural marvels, designed to harmonize with traditional pooja timings.',
+          path?.description.isNotEmpty == true
+              ? path!.description
+              : 'A curated spiritual itinerary traversing the ancient Dravidian architectural marvels, designed to harmonize with traditional pooja timings.',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 height: 1.6,
@@ -89,40 +107,22 @@ class _SacredPathContent extends StatelessWidget {
     );
   }
 
-  Widget _buildPathTimeline(BuildContext context, bool isDesktop) {
+  Widget _buildPathTimeline(BuildContext context, bool isDesktop, SacredPathModel path) {
     return Column(
       children: [
-        _buildJourneyStop(
-          context,
-          stepNumber: '01',
-          title: 'Meenakshi Amman Temple',
-          subtitle: 'Morning Darshan & Architectural Walk',
-          time: '06:00 AM',
-          imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4TCv2GLI-N3uZgpDitEt2sbyt3FqRpAn0lVu0RvqduamDW2PR176nnlqsrOnEbrutRHoLNR-aQ1Wz8h_beSjtWokPrY7h0V3zJogzN_JBo9p7zp35cyXyqoJOWlPsfNvDqPw3ylx9zIY0AMXd2OuE5jp3c-3SHwnWAMyKEoUfacP--HaVMuQOzcTWOW-_WayOram9CoSoMcEM5iGIw7AK2OWS-Lj76bXAMinjaM7IF2UXe0_1x3lRnr_aRf2bI4_Go-mFPjZg38A',
-          isFirst: true,
-          isCompleted: true,
-          isDesktop: isDesktop,
-        ),
-        _buildJourneyStop(
-          context,
-          stepNumber: '02',
-          title: 'Thirumalai Nayakkar Mahal',
-          subtitle: 'Heritage Exploration',
-          time: '11:30 AM',
-          imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCQsrlmk8xvGBIUL0Nto3N4GDdLGD39x2LJpScU_R-AtAsQri0UhJLbzopDsXo4e818-uzqJG1IT7KRDUotk6O3o8h0sJNtBnWiozul5GXnledQOH3hoH9EbLP6O9gCDOYSatv7tGzgyQCoEYa1boufDACN0WE-j02kdmE33WX88_1z5uQem7dtZ3jYTsuXVt81sDwZoT8HDToyV1rj_J4NBAxkS5daqJQLdXsiwUH30QCHFu_Ax_3-KWk5RGpiE0YubWjcW2A-bdQ',
-          isActive: true,
-          isDesktop: isDesktop,
-        ),
-        _buildJourneyStop(
-          context,
-          stepNumber: '03',
-          title: 'Alagar Koyil',
-          subtitle: 'Evening Seva & Prasad',
-          time: '05:00 PM',
-          imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAkbUUL3LD2XW7P4NeeBH0w8Zu6r07ojwBEB0hqmyjq2mMeS_TaQ6SDqQDYYOkuovBf0LC6gmS_WBbPDNsMStVAo2C-Pcn4SsLc7dVqvUjCPNnKf2NZr8XFhAVKTUdp_VMY_It6NfGtzWrtrFm4g-Lp3wh4LvzWklbjxeiyT1SoDXatS4Kje6NZBgyKPi8jQ_H-d0tzk6unxOP0RQf3KzE0nUILDaG3esLQ23ZVpZSNsKlKZmkAUvQYZoKtYw8A_FiW3WoLImlo4aA',
-          isLast: true,
-          isDesktop: isDesktop,
-        ),
+        for (var i = 0; i < path.stops.length; i++)
+          _buildJourneyStop(
+            context,
+            stepNumber: (i + 1).toString().padLeft(2, '0'),
+            title: path.stops[i].title,
+            subtitle: path.stops[i].subtitle,
+            time: path.stops[i].time,
+            imageUrl: path.stops[i].imageUrl,
+            isFirst: i == 0,
+            isLast: i == path.stops.length - 1,
+            isActive: i == 0,
+            isDesktop: isDesktop,
+          ),
       ],
     );
   }

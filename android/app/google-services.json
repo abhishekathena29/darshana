@@ -31,10 +31,10 @@
               "client_type": 3
             },
             {
-              "client_id": "109015641118-una8c9ugoddfqbqi1ht0u376h0i382fq.apps.googleusercontent.com",
+              "client_id": "109015641118-h5033lqk7ib2a6jb10p08d9kb24hgs29.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.sacredHeritage"
+                "bundle_id": "com.indiadarshana.app"
               }
             }
           ]

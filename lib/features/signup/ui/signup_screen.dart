@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../core/models/user_role.dart';
 import '../../../core/session/user_session.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/main_shell.dart';
 import '../provider/signup_provider.dart';
 
 /// Account creation screen. The key new requirement: the seeker picks whether
@@ -31,22 +30,43 @@ class _SignupContent extends StatefulWidget {
 
 class _SignupContentState extends State<_SignupContent> {
   final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _createAccount(SignupProvider provider) {
-    context.read<UserSession>().signIn(
-          role: provider.role,
-          displayName: _nameController.text,
-        );
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainShell()),
-      (route) => false,
+  Future<void> _createAccount(SignupProvider provider) async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields.')),
+      );
+      return;
+    }
+
+    final session = context.read<UserSession>();
+    final ok = await session.signUp(
+      email: email,
+      password: password,
+      displayName: name,
+      role: provider.role,
     );
+    if (!mounted) return;
+    if (ok) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } else if (session.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(session.errorMessage!)),
+      );
+    }
   }
 
   @override
@@ -128,6 +148,7 @@ class _SignupContentState extends State<_SignupContent> {
                       _FieldLabel('EMAIL ADDRESS'),
                       const SizedBox(height: 6),
                       TextField(
+                        controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         decoration: _fieldDecoration(
@@ -141,6 +162,7 @@ class _SignupContentState extends State<_SignupContent> {
                       _FieldLabel('PASSWORD'),
                       const SizedBox(height: 6),
                       TextField(
+                        controller: _passwordController,
                         obscureText: !provider.passwordVisible,
                         decoration: _fieldDecoration(
                           context,
@@ -178,25 +200,35 @@ class _SignupContentState extends State<_SignupContent> {
                             ),
                           ],
                         ),
-                        child: ElevatedButton(
-                          onPressed: () => _createAccount(provider),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          child: Text(
-                            'CREATE ${provider.role.title.toUpperCase()} ACCOUNT',
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
+                        child: Consumer<UserSession>(
+                          builder: (context, session, _) {
+                            return ElevatedButton(
+                              onPressed: session.isBusy ? null : () => _createAccount(provider),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding: const EdgeInsets.symmetric(vertical: 18),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
+                              child: session.isBusy
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    )
+                                  : Text(
+                                      'CREATE ${provider.role.title.toUpperCase()} ACCOUNT',
+                                      textAlign: TextAlign.center,
+                                      style: theme.textTheme.labelLarge?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                            );
+                          },
                         ),
                       ),
                     ],

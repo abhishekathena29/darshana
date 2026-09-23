@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/models/event_model.dart';
+import '../../../core/services/event_repository.dart';
+import '../../../core/session/user_session.dart';
 import '../provider/host_dashboard_provider.dart';
+import 'add_event_screen.dart';
 
 class HostDashboardScreen extends StatelessWidget {
   /// Space reserved at the top for the floating glass navigation in [MainShell].
@@ -28,32 +32,42 @@ class _HostDashboardContent extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 800;
     final isSmall = size.width < 360;
+    final uid = context.watch<UserSession>().uid ?? '';
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.only(
-        top: topInset + 20,
-        left: isSmall ? 16.0 : 24.0,
-        right: isSmall ? 16.0 : 24.0,
-        bottom: isSmall ? 20.0 : 32.0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context),
-          const SizedBox(height: 40),
-          _buildQuickStats(context, isDesktop),
-          const SizedBox(height: 48),
-          _buildActionGrid(context, isDesktop),
-          const SizedBox(height: 48),
-          _buildManagementAndActivity(context, isDesktop),
-          const SizedBox(height: 40),
-        ],
-      ),
+    return StreamBuilder<List<EventModel>>(
+      stream: EventRepository().watchOwnedBy(uid),
+      builder: (context, snapshot) {
+        final events = snapshot.data ?? const <EventModel>[];
+        final activeCount = events.where((e) => e.isUpcoming).length;
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.only(
+            top: topInset + 20,
+            left: isSmall ? 16.0 : 24.0,
+            right: isSmall ? 16.0 : 24.0,
+            bottom: isSmall ? 20.0 : 32.0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context),
+              const SizedBox(height: 40),
+              _buildQuickStats(context, isDesktop, uid, activeCount),
+              const SizedBox(height: 48),
+              _buildActionGrid(context, isDesktop),
+              const SizedBox(height: 48),
+              _buildManagementAndActivity(context, isDesktop, events),
+              const SizedBox(height: 40),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildHeader(BuildContext context) {
     final isSmall = MediaQuery.of(context).size.width < 360;
+    final name = context.watch<UserSession>().displayName;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -67,7 +81,7 @@ class _HostDashboardContent extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Welcome back, Temple Administrator. Here is your community overview.',
+          'Welcome back, $name. Here is your community overview.',
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: isSmall ? 13 : 16,
@@ -78,22 +92,20 @@ class _HostDashboardContent extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickStats(BuildContext context, bool isDesktop) {
+  Widget _buildQuickStats(BuildContext context, bool isDesktop, String uid, int activeCount) {
     final screenHeight = MediaQuery.of(context).size.height;
     if (isDesktop) {
       return SizedBox(
         height: 320,
         child: Row(
           children: [
-            Expanded(flex: 2, child: _buildMainStat(context)),
+            Expanded(flex: 2, child: _buildMainStat(context, uid)),
             const SizedBox(width: 24),
             Expanded(
               flex: 1,
               child: Column(
                 children: [
-                  Expanded(child: _buildSecondaryStat(context, Icons.visibility, '8.4k', 'PAGE VIEWS', Theme.of(context).colorScheme.primary)),
-                  const SizedBox(height: 24),
-                  Expanded(child: _buildSecondaryStat(context, Icons.event_available, '12', 'ACTIVE EVENTS', Theme.of(context).colorScheme.tertiary)),
+                  Expanded(child: _buildSecondaryStat(context, Icons.event_available, '$activeCount', 'ACTIVE EVENTS', Theme.of(context).colorScheme.tertiary)),
                 ],
               ),
             ),
@@ -105,17 +117,15 @@ class _HostDashboardContent extends StatelessWidget {
       final secondaryHeight = screenHeight < 700 ? 120.0 : 140.0;
       return Column(
         children: [
-          SizedBox(height: mainStatHeight, child: _buildMainStat(context)),
+          SizedBox(height: mainStatHeight, child: _buildMainStat(context, uid)),
           const SizedBox(height: 24),
-          SizedBox(height: secondaryHeight, child: _buildSecondaryStat(context, Icons.visibility, '8.4k', 'PAGE VIEWS', Theme.of(context).colorScheme.primary)),
-          const SizedBox(height: 24),
-          SizedBox(height: secondaryHeight, child: _buildSecondaryStat(context, Icons.event_available, '12', 'ACTIVE EVENTS', Theme.of(context).colorScheme.tertiary)),
+          SizedBox(height: secondaryHeight, child: _buildSecondaryStat(context, Icons.event_available, '$activeCount', 'ACTIVE EVENTS', Theme.of(context).colorScheme.tertiary)),
         ],
       );
     }
   }
 
-  Widget _buildMainStat(BuildContext context) {
+  Widget _buildMainStat(BuildContext context, String uid) {
     final isSmall = MediaQuery.of(context).size.width < 360;
     return Container(
       padding: EdgeInsets.all(isSmall ? 20.0 : 32.0),
@@ -132,93 +142,34 @@ class _HostDashboardContent extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'TOTAL REGISTRATIONS',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.0,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        '1,284',
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.trending_up, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      '+12%',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          Text(
+            'TOTAL REGISTRATIONS',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2.0,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
-          const Spacer(),
-          // CSS Graph Representation
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildBar(context, 0.4, false),
-              const SizedBox(width: 4),
-              _buildBar(context, 0.6, false),
-              const SizedBox(width: 4),
-              _buildBar(context, 0.45, false),
-              const SizedBox(width: 4),
-              _buildBar(context, 0.8, false),
-              const SizedBox(width: 4),
-              _buildBar(context, 0.55, false),
-              const SizedBox(width: 4),
-              _buildBar(context, 0.95, true),
-              const SizedBox(width: 4),
-              _buildBar(context, 0.7, false),
-            ],
+          const SizedBox(height: 8),
+          FutureBuilder<int>(
+            future: EventRepository().totalAttendeesForOwner(uid),
+            builder: (context, snapshot) {
+              final total = snapshot.data;
+              return FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  total == null ? '—' : '$total',
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              );
+            },
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBar(BuildContext context, double heightFactor, bool isHighlighted) {
-    return Expanded(
-      child: FractionallySizedBox(
-        heightFactor: heightFactor,
-        child: Container(
-          decoration: BoxDecoration(
-            color: isHighlighted ? Theme.of(context).colorScheme.primaryContainer : Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-          ),
-        ),
       ),
     );
   }
@@ -264,15 +215,42 @@ class _HostDashboardContent extends StatelessWidget {
       mainAxisSpacing: 24,
       crossAxisSpacing: 24,
       children: [
-        _buildActionCard(context, Icons.add_circle, 'Add New Event', true),
-        _buildActionCard(context, Icons.schedule, 'Temple Schedule', false),
-        _buildActionCard(context, Icons.campaign, 'Post Announcement', false),
+        _buildActionCard(
+          context,
+          Icons.add_circle,
+          'Add New Event',
+          true,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const AddEventScreen()),
+          ),
+        ),
+        _buildActionCard(
+          context,
+          Icons.schedule,
+          'Temple Schedule',
+          false,
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Temple schedule editing is coming soon.')),
+          ),
+        ),
+        _buildActionCard(
+          context,
+          Icons.campaign,
+          'Post Announcement',
+          false,
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Announcements are coming soon.')),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildActionCard(BuildContext context, IconData icon, String title, bool isPrimary) {
-    return Container(
+  Widget _buildActionCard(BuildContext context, IconData icon, String title, bool isPrimary, {required VoidCallback onTap}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(32),
+      onTap: onTap,
+      child: Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: isPrimary ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
@@ -305,15 +283,16 @@ class _HostDashboardContent extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
-  Widget _buildManagementAndActivity(BuildContext context, bool isDesktop) {
+  Widget _buildManagementAndActivity(BuildContext context, bool isDesktop, List<EventModel> events) {
     if (isDesktop) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(flex: 2, child: _buildEventManagement(context)),
+          Expanded(flex: 2, child: _buildEventManagement(context, events)),
           const SizedBox(width: 48),
           Expanded(flex: 1, child: _buildRecentActivity(context)),
         ],
@@ -322,7 +301,7 @@ class _HostDashboardContent extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildEventManagement(context),
+          _buildEventManagement(context, events),
           const SizedBox(height: 48),
           _buildRecentActivity(context),
         ],
@@ -330,7 +309,7 @@ class _HostDashboardContent extends StatelessWidget {
     }
   }
 
-  Widget _buildEventManagement(BuildContext context) {
+  Widget _buildEventManagement(BuildContext context, List<EventModel> events) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -344,61 +323,34 @@ class _HostDashboardContent extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(width: 8),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'VIEW ALL',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
-              ],
-            ),
           ],
         ),
         const SizedBox(height: 24),
-        _buildEventRow(
-          context,
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAkbUUL3LD2XW7P4NeeBH0w8Zu6r07ojwBEB0hqmyjq2mMeS_TaQ6SDqQDYYOkuovBf0LC6gmS_WBbPDNsMStVAo2C-Pcn4SsLc7dVqvUjCPNnKf2NZr8XFhAVKTUdp_VMY_It6NfGtzWrtrFm4g-Lp3wh4LvzWklbjxeiyT1SoDXatS4Kje6NZBgyKPi8jQ_H-d0tzk6unxOP0RQf3KzE0nUILDaG3esLQ23ZVpZSNsKlKZmkAUvQYZoKtYw8A_FiW3WoLImlo4aA',
-          'Evening Aarti Ceremony',
-          'Oct 24, 2023 • Varanasi Ghats',
-          '142/200',
-          'LIVE',
-          Colors.green,
-        ),
-        const SizedBox(height: 16),
-        _buildEventRow(
-          context,
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuA38D23peL1nNSdfCvXKz5JNAmR-aHIHPtrKYxLjaBp3523T4lB-6stNrzVrYnJfVsTuBkIwuExcSx6FZ_Dab4wK-lx5RJ_oTQSgIu0j95MIYKdwgEl2He6Teb8tEBvCu-qlp6r7CzvVvlL8VTd3sMffhE-uieuGWjvKxVIw8KREJMKNPVR7Y8atuawH0imV-gcjHlsnMp13WEe9qyJIMoy02D9-OtwJh2RVfUTFPMPwvW4X_onLIlmHWp-GX4i3RRSSmw7qCdNBe4',
-          'Classical Mudra Workshop',
-          'Nov 02, 2023 • Cultural Hall',
-          '45/50',
-          'DRAFT',
-          Colors.grey,
-        ),
-        const SizedBox(height: 16),
-        _buildEventRow(
-          context,
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuDjXArwAXnG-7KDqRsf2fziNrLG8c1quX2NjEykmYOyXBFi1B-cuDW_NsfHESTxqMgtzryvJvf6l6O_jcg2kDhLHaYJVrCb6bGbTQn3Vj8BokdtzgVvJyOhEvBw8rIqkm18fCye9kskmH0WMoxHTAP-oIKFObCQ3BWzBn1cXU7pACQ06FeEjMi8LQY64kdQCY20Mvc3alg1Ld9ellH1kRmPWXFGxaeSSE9ACvrt6-_VGzYp7z8uqjo7VDi14D8lqIm5EEF1Q2uoeM0',
-          'Deepavali Night Gala',
-          'Nov 12, 2023 • Main Plaza',
-          '500/500',
-          'SOLD OUT',
-          Colors.red,
-        ),
+        if (events.isEmpty)
+          Text(
+            'You haven\'t added any events yet.',
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          )
+        else
+          for (var i = 0; i < events.length; i++) ...[
+            if (i > 0) const SizedBox(height: 16),
+            _buildEventRow(context, events[i]),
+          ],
       ],
     );
   }
 
-  Widget _buildEventRow(BuildContext context, String imageUrl, String title, String subtitle, String tickets, String status, MaterialColor statusColor) {
+  Widget _buildEventRow(BuildContext context, EventModel event) {
     final isNarrow = MediaQuery.of(context).size.width < 600;
-    return Container(
+    final isUpcoming = event.isUpcoming;
+    final statusColor = isUpcoming ? Colors.green : Colors.grey;
+    final status = isUpcoming ? 'UPCOMING' : 'PAST';
+    return InkWell(
+      borderRadius: BorderRadius.circular(24),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => AddEventScreen(existing: event)),
+      ),
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -413,7 +365,7 @@ class _HostDashboardContent extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               image: DecorationImage(
-                image: CachedNetworkImageProvider(imageUrl),
+                image: CachedNetworkImageProvider(event.imageUrl),
                 fit: BoxFit.cover,
               ),
             ),
@@ -424,14 +376,14 @@ class _HostDashboardContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  event.title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle,
+                  '${event.dateText} • ${event.venue}',
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
@@ -442,17 +394,26 @@ class _HostDashboardContent extends StatelessWidget {
                     spacing: 8,
                     runSpacing: 4,
                     children: [
-                      Text(tickets, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                      StreamBuilder<int>(
+                        stream: EventRepository().watchAttendeeCount(event.id),
+                        builder: (context, snapshot) {
+                          final count = snapshot.data ?? 0;
+                          return Text(
+                            event.capacity != null ? '$count/${event.capacity}' : '$count',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          );
+                        },
+                      ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: statusColor.shade100,
+                          color: statusColor.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           status,
                           style: TextStyle(
-                            color: statusColor.shade800,
+                            color: statusColor,
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.0,
@@ -475,20 +436,29 @@ class _HostDashboardContent extends StatelessWidget {
                   style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1.5),
                 ),
                 const SizedBox(height: 2),
-                Text(tickets, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                StreamBuilder<int>(
+                  stream: EventRepository().watchAttendeeCount(event.id),
+                  builder: (context, snapshot) {
+                    final count = snapshot.data ?? 0;
+                    return Text(
+                      event.capacity != null ? '$count/${event.capacity}' : '$count',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    );
+                  },
+                ),
               ],
             ),
             const SizedBox(width: 24),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: statusColor.shade100,
+                color: statusColor.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 status,
                 style: TextStyle(
-                  color: statusColor.shade800,
+                  color: statusColor,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.0,
@@ -498,8 +468,9 @@ class _HostDashboardContent extends StatelessWidget {
             const SizedBox(width: 16),
           ] else
             const SizedBox(width: 8),
-          Icon(Icons.more_vert, color: Theme.of(context).colorScheme.outline),
+          Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.outline),
         ],
+      ),
       ),
     );
   }
