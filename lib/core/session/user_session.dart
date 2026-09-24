@@ -32,6 +32,7 @@ class UserSession extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   String? get uid => _repository.currentUser?.uid;
+  String? get email => _profile?.email ?? _repository.currentUser?.email;
   UserRole get role => _profile?.role ?? UserRole.devotee;
   bool get isTemple => role == UserRole.temple;
   String get displayName =>

@@ -70,7 +70,7 @@ class _TempleProfileContent extends StatelessWidget {
 
           // Floating Action Bottom Call
           Positioned(
-            bottom: isDesktop ? 48 : 100, // adjust for bottom nav
+            bottom: isDesktop ? 48 : 20, // adjust for bottom nav
             left: isDesktop ? null : 24,
             right: isDesktop ? 48 : 24,
             width: isDesktop ? 320 : null,
@@ -383,29 +383,187 @@ class _TempleProfileContent extends StatelessWidget {
   }
 
   Widget _buildContentGrid(BuildContext context, bool isDesktop) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
+    return Consumer<TempleProfileProvider>(
+      builder: (context, provider, child) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              _buildTabContent(context, isDesktop, provider.selectedTabIndex),
+              const SizedBox(height: 24),
+              _buildFacilitiesCard(context),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTabContent(BuildContext context, bool isDesktop, int tabIndex) {
+    switch (tabIndex) {
+      case 1:
+        return _buildScheduleCard(context);
+      case 2:
+        return _buildSevaCard(context);
+      case 3:
+        return _buildHistoryCard(context);
+      case 0:
+      default:
+        return isDesktop
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 2, child: _buildSignificanceCard(context)),
+                  const SizedBox(width: 24),
+                  Expanded(flex: 1, child: _buildProTipsCard(context)),
+                ],
+              )
+            : Column(
+                children: [
+                  _buildSignificanceCard(context),
+                  const SizedBox(height: 24),
+                  _buildProTipsCard(context),
+                ],
+              );
+    }
+  }
+
+  Widget _buildScheduleCard(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(isSmall ? 20.0 : 32.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(32),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isDesktop)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(flex: 2, child: _buildSignificanceCard(context)),
-                const SizedBox(width: 24),
-                Expanded(flex: 1, child: _buildProTipsCard(context)),
-              ],
+          Text(
+            'Pooja Schedule',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.schedule, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  temple.timings.isEmpty
+                      ? 'The temple administrator hasn\'t added a pooja schedule yet.'
+                      : temple.timings,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    height: 1.6,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSevaCard(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(isSmall ? 20.0 : 32.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Seva & Offerings',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontStyle: FontStyle.italic,
+                ),
+          ),
+          const SizedBox(height: 24),
+          if (temple.proTips.isEmpty)
+            Text(
+              'No seva or offering details added yet.',
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8)),
             )
           else
-            Column(
-              children: [
-                _buildSignificanceCard(context),
-                const SizedBox(height: 24),
-                _buildProTipsCard(context),
-              ],
+            for (var i = 0; i < temple.proTips.length; i++) ...[
+              if (i > 0) const SizedBox(height: 16),
+              _buildProTipItem(context, Icons.volunteer_activism, temple.proTips[i]),
+            ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryCard(BuildContext context) {
+    final isSmall = MediaQuery.of(context).size.width < 360;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(isSmall ? 20.0 : 32.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'History',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            temple.history.isEmpty
+                ? 'The temple administrator hasn\'t added a history yet.'
+                : temple.history,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              height: 1.6,
+              fontSize: 16,
             ),
-          const SizedBox(height: 24),
-          _buildFacilitiesCard(context),
+          ),
+          if (temple.architecture.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'ARCHITECTURE',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(temple.architecture, style: const TextStyle(fontSize: 14)),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );

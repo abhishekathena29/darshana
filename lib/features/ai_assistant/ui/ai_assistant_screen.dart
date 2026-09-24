@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../model/chat_message.dart';
 import '../provider/ai_assistant_provider.dart';
 
@@ -28,45 +28,40 @@ class _AIAssistantContent extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: _buildAppBar(context),
-      body: Stack(
+      body: Column(
         children: [
-          Consumer<AIAssistantProvider>(
-            builder: (context, provider, child) {
-              return SingleChildScrollView(
-                reverse: provider.messages.isNotEmpty,
-                padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: 24.0),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: Column(
-                      children: [
-                        if (provider.messages.isEmpty) ...[
-                          _buildGreeting(context),
-                          const SizedBox(height: 32),
-                          _buildSuggestedPrompts(context, provider),
-                        ] else
-                          _buildChatHistory(context, provider),
-                        const SizedBox(height: 120), // Space for the input bar
-                      ],
+          Expanded(
+            child: Consumer<AIAssistantProvider>(
+              builder: (context, provider, child) {
+                return SingleChildScrollView(
+                  reverse: provider.messages.isNotEmpty,
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPad, vertical: 24.0),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: provider.messages.isEmpty
+                          ? Column(
+                              children: [
+                                _buildGreeting(context),
+                                const SizedBox(height: 32),
+                                _buildSuggestedPrompts(context, provider),
+                              ],
+                            )
+                          : _buildChatHistory(context, provider),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-          Positioned(
-            bottom: 24,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              top: false,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 800),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: horizontalPad),
-                    child: _buildInputBar(context),
-                  ),
+          SafeArea(
+            top: false,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(horizontalPad, 8, horizontalPad, 8),
+                  child: _buildInputBar(context),
                 ),
               ),
             ),
@@ -87,13 +82,8 @@ class _AIAssistantContent extends StatelessWidget {
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuBbjFPU83KfenYDa16RYo87cvzatV0i6o3q8rWbGBi5H67XHCn3Zzl2QNH741kMJwtaPjL8VcaDan2hd2I_FU9PLuUs5GppmA0IqiO6WAlmFMJhjkjO2KYuUDU5Uv6qHeO1q1KLgTOetFOLX1mfYAjkbStWElzKjhHkz_PVKQxpnyRYmjbTHKi3YwrOsO0oXPfV5wyE3Ujy5SkHoD0BlRxXAdcaH_DVG6hXje4rlGbAKyCcJrIM2z59QmRyFGViQ_Sreug1jLYXCkg',
-            ),
-            radius: 18,
-          ),
-          const SizedBox(width: 12),
+          Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 22),
+          const SizedBox(width: 10),
           Flexible(
             child: Text(
               'Darshana',
@@ -257,14 +247,28 @@ class _AIAssistantContent extends StatelessWidget {
                 : Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3),
           ),
         ),
-        child: Text(
-          message.text,
-          style: TextStyle(
-            color: message.isError ? errorColor : Theme.of(context).colorScheme.onSurface,
-            fontSize: 14,
-            height: 1.5,
-          ),
-        ),
+        child: message.isError
+            ? Text(
+                message.text,
+                style: TextStyle(color: errorColor, fontSize: 14, height: 1.5),
+              )
+            : MarkdownBody(
+                data: message.text,
+                selectable: true,
+                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+                  p: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                  strong: const TextStyle(fontWeight: FontWeight.bold),
+                  listBullet: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
+                  code: TextStyle(
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -288,10 +292,7 @@ class _AIAssistantContent extends StatelessWidget {
           ),
           child: Row(
             children: [
-              IconButton(
-                icon: Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.outline),
-                onPressed: () {},
-              ),
+              const SizedBox(width: 8),
               Expanded(
                 child: TextField(
                   controller: provider.messageController,

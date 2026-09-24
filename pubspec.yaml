@@ -42,7 +42,7 @@ dependencies:
   cloud_firestore:
   http:
   url_launcher:
-
+  flutter_markdown_plus: ^1.0.12
 dev_dependencies:
   flutter_test:
     sdk: flutter

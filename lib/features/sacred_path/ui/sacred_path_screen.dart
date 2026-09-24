@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/models/sacred_path_model.dart';
 import '../../../core/services/sacred_path_repository.dart';
 import '../provider/sacred_path_provider.dart';
@@ -272,7 +273,7 @@ class _SacredPathContent extends StatelessWidget {
         if (isActive) ...[
           const SizedBox(height: 24),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () => _openDirections(context, title),
             icon: const Icon(Icons.navigation),
             label: const Text('DIRECTIONS'),
             style: TextButton.styleFrom(
@@ -283,6 +284,16 @@ class _SacredPathContent extends StatelessWidget {
         ]
       ],
     );
+  }
+
+  Future<void> _openDirections(BuildContext context, String destination) async {
+    final uri = Uri.https('www.google.com', '/maps/search/', {'api': '1', 'query': destination});
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open maps.')),
+      );
+    }
   }
 
   Widget _buildCardImage(String imageUrl, {bool fixedWidth = true}) {

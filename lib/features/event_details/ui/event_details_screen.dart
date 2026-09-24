@@ -115,17 +115,6 @@ class _EventDetailsContent extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
       ),
-      actions: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(
-              'https://lh3.googleusercontent.com/aida-public/AB6AXuA0ke83SrFkdXrGmkeL6uEOl61VI6UdfzekOEvq_01FdPh5SSwDzS85X-nQVNl9UjREljzOzzHCHiLckV7-3M_xiT2dSm9-WYGiTJxyXP_odU7XPl7CYa9ywZMmgarhKeeVSK1lncmT9oNteXO864nno5jVAPPtp3eTqPyROxbqqfO80WAOHs5CIsoZOudNDM240qB1kkvXercDOwoPfR_XkTswDp3ZsWenMa-ogGrIHKxOh67mVveVTBmSZewDYfvClvBldWTvB78',
-            ),
-            radius: 18,
-          ),
-        ),
-      ],
     );
   }
 
@@ -199,19 +188,26 @@ class _EventDetailsContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        GridView.count(
-          crossAxisCount: size.width < 400 ? 2 : 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: isSmall ? 2.0 : 2.5,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          children: [
-            _buildInfoTile(context, Icons.calendar_today, 'DATE', event.dateText),
-            _buildInfoTile(context, Icons.schedule, 'STARTS AT', event.startTime),
-            _buildInfoTile(context, Icons.location_on, 'VENUE', event.venue),
-            _buildInfoTile(context, Icons.hourglass_empty, 'DURATION', event.durationText),
-          ],
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: _buildInfoTile(context, Icons.calendar_today, 'DATE', event.dateText)),
+              const SizedBox(width: 12),
+              Expanded(child: _buildInfoTile(context, Icons.schedule, 'STARTS AT', event.startTime)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: _buildInfoTile(context, Icons.location_on, 'VENUE', event.venue)),
+              const SizedBox(width: 12),
+              Expanded(child: _buildInfoTile(context, Icons.hourglass_empty, 'DURATION', event.durationText)),
+            ],
+          ),
         ),
       ],
     );
@@ -227,11 +223,14 @@ class _EventDetailsContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
           const SizedBox(height: 8),
           Text(
             title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
@@ -242,6 +241,8 @@ class _EventDetailsContent extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
           ),
         ],

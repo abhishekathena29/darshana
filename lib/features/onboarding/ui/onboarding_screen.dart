@@ -17,6 +17,44 @@ class OnboardingScreen extends StatelessWidget {
   }
 }
 
+class _OnboardingStep {
+  final String imageUrl;
+  final String headline;
+  final String headlineAccent;
+  final String body;
+
+  const _OnboardingStep({
+    required this.imageUrl,
+    required this.headline,
+    required this.headlineAccent,
+    required this.body,
+  });
+}
+
+const _onboardingSteps = [
+  _OnboardingStep(
+    imageUrl:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuCbP7jM-e7-ujGQJvIsJM25AJpvxPSxuxEZwl6nHM3L9soC6qtIMOLPdzCG_-ucOaaW96-dIhTwq_2P4n9xWT9eXClhZ6H-r0kgyBCAVih5-syKf8C38Fw_zAGL11Rk37Lqab-uWqMBNOn-dHdVNmGcUwcgQXkSTyn2XY1ux7U3_mEPZAROPTsrklbOi3Qi7SVOCXbG60CAqNVh0MlaW6peT0VuJ0ZW4oJJVS162rMwFKx-qTrL9JYG4wy05dSRgG8nHHGFfdfPFAs',
+    headline: 'Discover Sacred\n',
+    headlineAccent: 'Sanctuaries',
+    body: 'Explore the living history of timeless monuments and uncover hidden traditions.',
+  ),
+  _OnboardingStep(
+    imageUrl:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuAdfhQvhLaA6RCxWiMBr5WGMj45NMtcXqh5pCqRAbDUwP82kWQOdBKvuGuVH-17ofDfeBL5xkHxSC2tVdHI4-kV9vuAIZjpJRq5v9PQ30dMZdu5G2qJouof4ozjEsMKBi4nRIWujx1YN4kUzCKDIgLg8yLx23henCcOjssPwd5RaFCxUmowLuGjiWYqSM0HdwcGy2zerbjscMUvNy6zuNdLEXWkB_TL8D-scncSf0JnI3MKjah47UjAgSiRoTU2DRoK9ob667-h5Ro',
+    headline: 'Join Sacred\n',
+    headlineAccent: 'Gatherings',
+    body: 'Find and reserve your place at temple festivals and cultural events near you.',
+  ),
+  _OnboardingStep(
+    imageUrl:
+        'https://lh3.googleusercontent.com/aida-public/AB6AXuB4TCv2GLI-N3uZgpDitEt2sbyt3FqRpAn0lVu0RvqduamDW2PR176nnlqsrOnEbrutRHoLNR-aQ1Wz8h_beSjtWokPrY7h0V3zJogzN_JBo9p7zp35cyXyqoJOWlPsfNvDqPw3ylx9zIY0AMXd2OuE5jp3c-3SHwnWAMyKEoUfacP--HaVMuQOzcTWOW-_WayOram9CoSoMcEM5iGIw7AK2OWS-Lj76bXAMinjaM7IF2UXe0_1x3lRnr_aRf2bI4_Go-mFPjZg38A',
+    headline: 'Walk Your Own\n',
+    headlineAccent: 'Sacred Path',
+    body: 'Get a personalized itinerary and an AI companion for your journey.',
+  ),
+];
+
 class _OnboardingContent extends StatelessWidget {
   const _OnboardingContent();
 
@@ -25,213 +63,198 @@ class _OnboardingContent extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final isSmall = size.width < 360;
     final isShort = size.height < 700;
-    final heroHeight = (isShort ? size.height * 0.4 : size.height * 0.55)
-        .clamp(220.0, 520.0);
+    final heroHeight = (size.height * (isShort ? 0.4 : 0.5)).clamp(200.0, 420.0);
     final horizontalPad = isSmall ? 20.0 : 32.0;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Column(
-        children: [
-          // Hero Section
-          SizedBox(
-            height: heroHeight,
-            width: double.infinity,
-            child: Stack(
-              fit: StackFit.expand,
+      body: Consumer<OnboardingProvider>(
+        builder: (context, provider, child) {
+          final step = _onboardingSteps[provider.currentStep];
+          return SafeArea(
+            child: Column(
               children: [
-                CachedNetworkImage(
-                  imageUrl:
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuCbP7jM-e7-ujGQJvIsJM25AJpvxPSxuxEZwl6nHM3L9soC6qtIMOLPdzCG_-ucOaaW96-dIhTwq_2P4n9xWT9eXClhZ6H-r0kgyBCAVih5-syKf8C38Fw_zAGL11Rk37Lqab-uWqMBNOn-dHdVNmGcUwcgQXkSTyn2XY1ux7U3_mEPZAROPTsrklbOi3Qi7SVOCXbG60CAqNVh0MlaW6peT0VuJ0ZW4oJJVS162rMwFKx-qTrL9JYG4wy05dSRgG8nHHGFfdfPFAs',
-                  fit: BoxFit.cover,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: const [0.0, 0.7, 1.0],
-                      colors: [
-                        Theme.of(context).colorScheme.surface.withOpacity(0.0),
-                        Theme.of(context).colorScheme.surface.withOpacity(0.8),
-                        Theme.of(context).colorScheme.surface,
-                      ],
-                    ),
+                // Hero Section
+                SizedBox(
+                  height: heroHeight,
+                  width: double.infinity,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: CachedNetworkImage(
+                          key: ValueKey(step.imageUrl),
+                          imageUrl: step.imageUrl,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        top: 16,
+                        left: horizontalPad,
+                        child: Text(
+                          'Darshana',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: Colors.white,
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SafeArea(
-                  bottom: false,
+
+                // Content Section
+                Expanded(
                   child: Padding(
-                    padding: EdgeInsets.only(top: 16, left: horizontalPad),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        'Sanctuary',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.bold,
+                    padding: EdgeInsets.fromLTRB(horizontalPad, 20, horizontalPad, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Step Indicator
+                            Row(
+                              children: [
+                                _buildStepIndicator(0, provider.currentStep, context),
+                                const SizedBox(width: 8),
+                                _buildStepIndicator(1, provider.currentStep, context),
+                                const SizedBox(width: 8),
+                                _buildStepIndicator(2, provider.currentStep, context),
+                                const SizedBox(width: 16),
+                                Text(
+                                  'STEP 0${provider.currentStep + 1} / 03',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        color: Theme.of(context).colorScheme.outline,
+                                        letterSpacing: 2.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
                             ),
-                      ),
+                            SizedBox(height: isShort ? 12 : 20),
+
+                            // Headline
+                            Text.rich(
+                              TextSpan(
+                                text: step.headline,
+                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.2,
+                                      fontSize: isSmall ? 24 : null,
+                                    ),
+                                children: [
+                                  TextSpan(
+                                    text: step.headlineAccent,
+                                    style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            // Body Text
+                            Text(
+                              step.body,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    height: 1.5,
+                                  ),
+                            ),
+                          ],
+                        ),
+
+                        // Buttons
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [AppColors.ctaGradientStart, AppColors.ctaGradientEnd],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                    offset: const Offset(0, 8),
+                                    blurRadius: 16,
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (provider.currentStep == 2) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const SignupScreen()),
+                                    );
+                                  } else {
+                                    provider.nextStep();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  padding: EdgeInsets.symmetric(vertical: isShort ? 14 : 18),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      provider.currentStep == 2 ? 'GET STARTED' : 'NEXT',
+                                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.5,
+                                          ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const SignupScreen()),
+                                  );
+                                },
+                                child: Text(
+                                  'SKIP INTRODUCTION',
+                                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                        color: Theme.of(context).colorScheme.outline,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.5,
+                                      ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-
-          // Content Section
-          Expanded(
-            child: Transform.translate(
-              offset: const Offset(0, -40),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: horizontalPad),
-                child: Consumer<OnboardingProvider>(
-                  builder: (context, provider, child) {
-                    return SingleChildScrollView(
-                      child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Step Indicator
-                        Row(
-                          children: [
-                            _buildStepIndicator(0, provider.currentStep, context),
-                            const SizedBox(width: 8),
-                            _buildStepIndicator(1, provider.currentStep, context),
-                            const SizedBox(width: 8),
-                            _buildStepIndicator(2, provider.currentStep, context),
-                            const SizedBox(width: 16),
-                            Text(
-                              'STEP 0${provider.currentStep + 1} / 03',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.outline,
-                                    letterSpacing: 2.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        
-                        // Headline
-                        Text.rich(
-                          TextSpan(
-                            text: 'Discover Sacred\n',
-                            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  height: 1.2,
-                                  fontSize: isSmall ? 28 : null,
-                                ),
-                            children: [
-                              TextSpan(
-                                text: 'Sanctuaries',
-                                style: TextStyle(
-                                  fontStyle: FontStyle.italic,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        // Body Text
-                        Text(
-                          'Explore the living history of timeless monuments. Uncover hidden traditions, precise ritual timings, and the architectural wonders of the ancient world.',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                height: 1.6,
-                              ),
-                        ),
-                        const SizedBox(height: 24),
-                        
-                        // Feature Chips
-                        Row(
-                          children: [
-                            _buildFeatureChip(Icons.history_edu, 'History', context),
-                            const SizedBox(width: 16),
-                            _buildFeatureChip(Icons.schedule, 'Timings', context),
-                          ],
-                        ),
-
-                        SizedBox(height: isShort ? 24 : 48),
-
-                        // Buttons
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [AppColors.ctaGradientStart, AppColors.ctaGradientEnd],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                                offset: const Offset(0, 8),
-                                blurRadius: 16,
-                              ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (provider.currentStep == 2) {
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SignupScreen()));
-                              } else {
-                                provider.nextStep();
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
-                              padding: const EdgeInsets.symmetric(vertical: 20),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'NEXT',
-                                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.5,
-                                      ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SignupScreen()));
-                            },
-                            child: Text(
-                              'SKIP INTRODUCTION',
-                              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                    color: Theme.of(context).colorScheme.outline,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.5,
-                                  ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -247,33 +270,6 @@ class _OnboardingContent extends StatelessWidget {
             ? Theme.of(context).colorScheme.primary
             : Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
         borderRadius: BorderRadius.circular(2),
-      ),
-    );
-  }
-
-  Widget _buildFeatureChip(IconData icon, String label, BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: Theme.of(context).colorScheme.tertiary, size: 20),
-            const SizedBox(width: 12),
-            Flexible(
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

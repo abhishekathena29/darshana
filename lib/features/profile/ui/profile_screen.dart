@@ -6,6 +6,8 @@ import '../../../core/session/user_session.dart';
 import '../../temple_profile/ui/temple_profile_screen.dart';
 import '../../temple_profile/ui/edit_temple_screen.dart';
 import '../../saved_temples/ui/saved_temples_screen.dart';
+import 'notifications_screen.dart';
+import 'settings_screen.dart';
 
 /// Role-aware profile / account screen hosted inside the main shell.
 ///
@@ -62,13 +64,17 @@ class ProfileScreen extends StatelessWidget {
                 icon: Icons.notifications_outlined,
                 title: 'Notifications',
                 subtitle: 'Festival reminders and ritual timings.',
-                onTap: () {},
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                ),
               ),
               _ActionCard(
                 icon: Icons.settings_outlined,
                 title: 'Settings',
                 subtitle: 'Account, language and appearance.',
-                onTap: () {},
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                ),
               ),
               const SizedBox(height: 16),
               OutlinedButton.icon(

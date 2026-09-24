@@ -4,10 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/models/event_model.dart';
 import '../../../core/models/temple_model.dart';
 import '../../../core/services/event_repository.dart';
+import '../../../core/services/newsletter_repository.dart';
 import '../../../core/services/temple_repository.dart';
+import '../../../core/session/user_session.dart';
 import '../provider/home_provider.dart';
 import '../../event_details/ui/event_details_screen.dart';
 import '../../temple_profile/ui/temple_profile_screen.dart';
+import 'temple_gallery_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   /// Space reserved at the top for the floating glass navigation in [MainShell].
@@ -33,33 +36,52 @@ class _HomeScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 800;
 
-    return StreamBuilder<List<TempleModel>>(
-      stream: TempleRepository().watchAll(),
-      builder: (context, templeSnapshot) {
-        final temples = templeSnapshot.data ?? const <TempleModel>[];
-        return StreamBuilder<List<EventModel>>(
-          stream: EventRepository().watchAll(),
-          builder: (context, eventSnapshot) {
-            final upcoming = (eventSnapshot.data ?? const <EventModel>[])
-                .where((e) => e.isUpcoming)
-                .toList()
-              ..sort((a, b) => a.date.compareTo(b.date));
-            final performances = upcoming.where((e) => e.category == 'Music' || e.category == 'Dance').toList();
-            final sacredEvents = upcoming.where((e) => e.category == 'Poojas' || e.category == 'Festivals').toList();
+    return Consumer<HomeProvider>(
+      builder: (context, filters, child) {
+        return StreamBuilder<List<TempleModel>>(
+          stream: TempleRepository().watchAll(),
+          builder: (context, templeSnapshot) {
+            final allTemples = templeSnapshot.data ?? const <TempleModel>[];
+            final temples = allTemples.where((t) {
+              final matchesCity = filters.city == kAllCities || t.location == filters.city;
+              final matchesSearch = filters.search.isEmpty ||
+                  t.name.toLowerCase().contains(filters.search.toLowerCase());
+              return matchesCity && matchesSearch;
+            }).toList();
 
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: topInset + 12),
-                  _buildHeroSection(context, isDesktop, upcoming.isEmpty ? null : upcoming.first),
-                  _buildSearchAndFilters(context, isDesktop),
-                  _buildFeaturedTemples(context, isDesktop, temples),
-                  _buildCulturalPerformances(context, performances),
-                  _buildSacredEvents(context, isDesktop, sacredEvents),
-                  _buildNewsletter(context),
-                  const SizedBox(height: 40),
-                ],
-              ),
+            return StreamBuilder<List<EventModel>>(
+              stream: EventRepository().watchAll(),
+              builder: (context, eventSnapshot) {
+                final upcoming = (eventSnapshot.data ?? const <EventModel>[])
+                    .where((e) => e.isUpcoming)
+                    .toList()
+                  ..sort((a, b) => a.date.compareTo(b.date));
+                final filteredEvents = upcoming.where((e) {
+                  final matchesCategory = filters.category == kAllEventTypes || e.category == filters.category;
+                  final matchesSearch = filters.search.isEmpty ||
+                      e.title.toLowerCase().contains(filters.search.toLowerCase());
+                  final matchesDate = filters.matchesDate(e.date);
+                  return matchesCategory && matchesSearch && matchesDate;
+                }).toList();
+                final performances = filteredEvents.where((e) => e.category == 'Music' || e.category == 'Dance').toList();
+                final sacredEvents = filteredEvents.where((e) => e.category == 'Poojas' || e.category == 'Festivals').toList();
+                final cities = allTemples.map((t) => t.location).where((l) => l.isNotEmpty).toSet().toList()..sort();
+
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(height: topInset + 12),
+                      _buildHeroSection(context, isDesktop, upcoming.isEmpty ? null : upcoming.first),
+                      _buildSearchAndFilters(context, isDesktop, filters, cities),
+                      _buildFeaturedTemples(context, isDesktop, temples),
+                      _buildCulturalPerformances(context, performances),
+                      _buildSacredEvents(context, isDesktop, sacredEvents),
+                      _buildNewsletter(context),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                );
+              },
             );
           },
         );
@@ -176,7 +198,9 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchAndFilters(BuildContext context, bool isDesktop) {
+  Widget _buildSearchAndFilters(BuildContext context, bool isDesktop, HomeProvider filters, List<String> cities) {
+    final eventTypes = const ['Poojas', 'Festivals', 'Music', 'Dance', 'Tours'];
+    final dateOptions = const ['Today', 'This Week', 'This Month'];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Container(
@@ -190,37 +214,34 @@ class _HomeScreenContent extends StatelessWidget {
         child: isDesktop
             ? Row(
                 children: [
-                  Expanded(flex: 2, child: _buildSearchField(context)),
-                  Flexible(child: _buildFilterDropdown(context, 'All Cities')),
-                  Flexible(child: _buildFilterDropdown(context, 'Event Type')),
-                  Flexible(child: _buildFilterDropdown(context, 'Any Date')),
+                  Expanded(flex: 2, child: _buildSearchField(context, filters)),
+                  Flexible(child: _buildCityDropdown(context, filters, cities)),
+                  Flexible(child: _buildCategoryDropdown(context, filters, eventTypes)),
+                  Flexible(child: _buildDateDropdown(context, filters, dateOptions)),
                 ],
               )
             : Column(
                 children: [
-                  _buildSearchField(context),
+                  _buildSearchField(context, filters),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Expanded(
-                        child: _buildFilterDropdown(context, 'All Cities'),
-                      ),
-                      Expanded(
-                        child: _buildFilterDropdown(context, 'Event Type'),
-                      ),
+                      Expanded(child: _buildCityDropdown(context, filters, cities)),
+                      Expanded(child: _buildCategoryDropdown(context, filters, eventTypes)),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  _buildFilterDropdown(context, 'Any Date'),
+                  _buildDateDropdown(context, filters, dateOptions),
                 ],
               ),
       ),
     );
   }
 
-  Widget _buildSearchField(BuildContext context) {
+  Widget _buildSearchField(BuildContext context, HomeProvider filters) {
     final isSmall = MediaQuery.of(context).size.width < 400;
     return TextField(
+      onChanged: filters.setSearch,
       decoration: InputDecoration(
         hintText: isSmall
             ? 'Search...'
@@ -237,7 +258,67 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterDropdown(BuildContext context, String hint) {
+  Widget _buildCityDropdown(BuildContext context, HomeProvider filters, List<String> cities) {
+    return _buildDropdownShell(
+      context,
+      DropdownButton<String>(
+        isExpanded: true,
+        value: filters.city,
+        items: [
+          DropdownMenuItem(value: kAllCities, child: Text(kAllCities, overflow: TextOverflow.ellipsis)),
+          for (final city in cities)
+            DropdownMenuItem(value: city, child: Text(city, overflow: TextOverflow.ellipsis)),
+        ],
+        onChanged: (value) {
+          if (value != null) filters.setCity(value);
+        },
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
+        icon: const Icon(Icons.arrow_drop_down),
+      ),
+    );
+  }
+
+  Widget _buildCategoryDropdown(BuildContext context, HomeProvider filters, List<String> eventTypes) {
+    return _buildDropdownShell(
+      context,
+      DropdownButton<String>(
+        isExpanded: true,
+        value: filters.category,
+        items: [
+          DropdownMenuItem(value: kAllEventTypes, child: Text(kAllEventTypes, overflow: TextOverflow.ellipsis)),
+          for (final type in eventTypes)
+            DropdownMenuItem(value: type, child: Text(type, overflow: TextOverflow.ellipsis)),
+        ],
+        onChanged: (value) {
+          if (value != null) filters.setCategory(value);
+        },
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
+        icon: const Icon(Icons.arrow_drop_down),
+      ),
+    );
+  }
+
+  Widget _buildDateDropdown(BuildContext context, HomeProvider filters, List<String> dateOptions) {
+    return _buildDropdownShell(
+      context,
+      DropdownButton<String>(
+        isExpanded: true,
+        value: filters.dateFilter,
+        items: [
+          DropdownMenuItem(value: kAnyDate, child: Text(kAnyDate, overflow: TextOverflow.ellipsis)),
+          for (final option in dateOptions)
+            DropdownMenuItem(value: option, child: Text(option, overflow: TextOverflow.ellipsis)),
+        ],
+        onChanged: (value) {
+          if (value != null) filters.setDateFilter(value);
+        },
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
+        icon: const Icon(Icons.arrow_drop_down),
+      ),
+    );
+  }
+
+  Widget _buildDropdownShell(BuildContext context, Widget dropdown) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -245,20 +326,7 @@ class _HomeScreenContent extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          hint: Text(
-            hint,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              fontSize: 14,
-            ),
-          ),
-          items: const [],
-          onChanged: (value) {},
-          icon: const Icon(Icons.arrow_drop_down),
-        ),
-      ),
+      child: DropdownButtonHideUnderline(child: dropdown),
     );
   }
 
@@ -309,7 +377,9 @@ class _HomeScreenContent extends StatelessWidget {
                 ),
               ),
               TextButton.icon(
-                onPressed: () {},
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const TempleGalleryScreen()),
+                ),
                 icon: const Icon(Icons.arrow_forward, size: 16),
                 label: const Text('VIEW GALLERY'),
                 style: TextButton.styleFrom(
@@ -711,7 +781,7 @@ class _HomeScreenContent extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Join the Sanctuary',
+              'Join Darshana',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
                 fontStyle: FontStyle.italic,
@@ -729,52 +799,113 @@ class _HomeScreenContent extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            Container(
-              constraints: const BoxConstraints(maxWidth: 400),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Your spiritual path email...',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(
-                          context,
-                        ).colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('SUBSCRIBE'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const _NewsletterForm(),
           ],
         ),
       ),
     );
   }
+}
 
+class _NewsletterForm extends StatefulWidget {
+  const _NewsletterForm();
+
+  @override
+  State<_NewsletterForm> createState() => _NewsletterFormState();
+}
+
+class _NewsletterFormState extends State<_NewsletterForm> {
+  final _controller = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _subscribe() async {
+    final email = _controller.text.trim();
+    final uid = context.read<UserSession>().uid;
+    if (email.isEmpty || !email.contains('@') || uid == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email address.')),
+      );
+      return;
+    }
+    setState(() => _isSubmitting = true);
+    try {
+      await NewsletterRepository().subscribe(uid, email);
+      if (!mounted) return;
+      _controller.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Subscribed with $email.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not subscribe. Please try again.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 400),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              keyboardType: TextInputType.emailAddress,
+              onSubmitted: (_) => _subscribe(),
+              decoration: const InputDecoration(
+                hintText: 'Your spiritual path email...',
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: ElevatedButton(
+              onPressed: _isSubmitting ? null : _subscribe,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(
+                  context,
+                ).colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: _isSubmitting
+                  ? SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    )
+                  : const Text('SUBSCRIBE'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

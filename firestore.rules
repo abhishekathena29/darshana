@@ -60,5 +60,11 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if false;
     }
+
+    // Newsletter sign-ups from the home screen: one doc per user, keyed by
+    // their own uid, so they can only ever create/update their own entry.
+    match /newsletterSubscribers/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
   }
 }

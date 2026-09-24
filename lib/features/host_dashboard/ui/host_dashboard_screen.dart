@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/models/event_model.dart';
+import '../../../core/models/temple_model.dart';
 import '../../../core/services/event_repository.dart';
+import '../../../core/services/temple_repository.dart';
 import '../../../core/session/user_session.dart';
+import '../../temple_profile/ui/edit_temple_screen.dart';
 import '../provider/host_dashboard_provider.dart';
 import 'add_event_screen.dart';
 
@@ -229,20 +232,79 @@ class _HostDashboardContent extends StatelessWidget {
           Icons.schedule,
           'Temple Schedule',
           false,
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Temple schedule editing is coming soon.')),
-          ),
+          onTap: () => _openTempleSchedule(context),
         ),
         _buildActionCard(
           context,
           Icons.campaign,
           'Post Announcement',
           false,
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Announcements are coming soon.')),
-          ),
+          onTap: () => _postAnnouncement(context),
         ),
       ],
+    );
+  }
+
+  Future<TempleModel?> _fetchOwnedTemple(BuildContext context) async {
+    final uid = context.read<UserSession>().uid;
+    if (uid == null) return null;
+    final owned = await TempleRepository().watchOwnedBy(uid).first;
+    return owned.isEmpty ? null : owned.first;
+  }
+
+  Future<void> _openTempleSchedule(BuildContext context) async {
+    final temple = await _fetchOwnedTemple(context);
+    if (!context.mounted) return;
+    if (temple == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Set up your temple profile first to edit its schedule.')),
+      );
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => EditTempleScreen(templeId: temple.id)),
+    );
+  }
+
+  Future<void> _postAnnouncement(BuildContext context) async {
+    final temple = await _fetchOwnedTemple(context);
+    if (!context.mounted) return;
+    if (temple == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Set up your temple profile first to post an announcement.')),
+      );
+      return;
+    }
+    final controller = TextEditingController();
+    final message = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Post Announcement'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            hintText: 'e.g. Evening aarti moved to 7 PM this Friday.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('CANCEL'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()),
+            child: const Text('POST'),
+          ),
+        ],
+      ),
+    );
+    if (message == null || message.isEmpty) return;
+    await TempleRepository().addProTip(temple.id, message);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Posted to ${temple.name}\'s Seva & Offerings.')),
     );
   }
 
@@ -288,13 +350,14 @@ class _HostDashboardContent extends StatelessWidget {
   }
 
   Widget _buildManagementAndActivity(BuildContext context, bool isDesktop, List<EventModel> events) {
+    final uid = context.read<UserSession>().uid ?? '';
     if (isDesktop) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(flex: 2, child: _buildEventManagement(context, events)),
           const SizedBox(width: 48),
-          Expanded(flex: 1, child: _buildRecentActivity(context)),
+          Expanded(flex: 1, child: _buildRecentActivity(context, uid)),
         ],
       );
     } else {
@@ -303,7 +366,7 @@ class _HostDashboardContent extends StatelessWidget {
         children: [
           _buildEventManagement(context, events),
           const SizedBox(height: 48),
-          _buildRecentActivity(context),
+          _buildRecentActivity(context, uid),
         ],
       );
     }
@@ -475,7 +538,7 @@ class _HostDashboardContent extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentActivity(BuildContext context) {
+  Widget _buildRecentActivity(BuildContext context, String uid) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -484,105 +547,57 @@ class _HostDashboardContent extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
-        Stack(
-          children: [
-            Positioned(
-              left: 19,
-              top: 8,
-              bottom: 8,
-              child: Container(
-                width: 2,
-                color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3),
-              ),
-            ),
-            Column(
+        FutureBuilder<List<EventAttendeeActivity>>(
+          future: EventRepository().recentAttendeesForOwner(uid),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final bookings = snapshot.data ?? const <EventAttendeeActivity>[];
+            if (bookings.isEmpty) {
+              return Text(
+                'No recent registrations yet.',
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              );
+            }
+            return Stack(
               children: [
-                _buildActivityItem(
-                  context,
-                  Icons.confirmation_number,
-                  Theme.of(context).colorScheme.primaryContainer,
-                  Theme.of(context).colorScheme.primary,
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
-                      children: const [
-                        TextSpan(text: 'Aarav Sharma', style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: ' registered for the Morning Yoga session.'),
-                      ],
-                    ),
+                Positioned(
+                  left: 19,
+                  top: 8,
+                  bottom: 8,
+                  child: Container(
+                    width: 2,
+                    color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3),
                   ),
-                  '2 minutes ago',
-                  null,
                 ),
-                const SizedBox(height: 24),
-                _buildActivityItem(
-                  context,
-                  Icons.verified_user,
-                  Theme.of(context).colorScheme.tertiaryContainer,
-                  Theme.of(context).colorScheme.tertiary,
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
-                      children: const [
-                        TextSpan(text: 'New '),
-                        TextSpan(text: 'Verification Request', style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: ' from Pandit Rajan for priest credentials.'),
-                      ],
-                    ),
-                  ),
-                  '1 hour ago',
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          minimumSize: Size.zero,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                Column(
+                  children: [
+                    for (var i = 0; i < bookings.length; i++) ...[
+                      if (i > 0) const SizedBox(height: 24),
+                      _buildActivityItem(
+                        context,
+                        Icons.confirmation_number,
+                        Theme.of(context).colorScheme.primaryContainer,
+                        Theme.of(context).colorScheme.primary,
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
+                            children: [
+                              TextSpan(text: bookings[i].name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(text: ' registered for ${bookings[i].eventTitle}.'),
+                            ],
+                          ),
                         ),
-                        child: const Text('APPROVE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          minimumSize: Size.zero,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: const Text('DETAILS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
+                        _timeAgo(bookings[i].bookedAt),
+                        null,
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                _buildActivityItem(
-                  context,
-                  Icons.rate_review,
-                  Theme.of(context).colorScheme.secondaryContainer,
-                  Theme.of(context).colorScheme.secondary,
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
-                      children: const [
-                        TextSpan(text: 'New review posted for '),
-                        TextSpan(text: 'Heritage Walk', style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: '.'),
-                      ],
-                    ),
-                  ),
-                  '4 hours ago',
-                  Row(
-                    children: List.generate(5, (index) => Icon(Icons.star, color: Theme.of(context).colorScheme.secondary, size: 14)),
-                  ),
+                  ],
                 ),
               ],
-            ),
-          ],
+            );
+          },
         ),
       ],
     );
@@ -621,4 +636,13 @@ class _HostDashboardContent extends StatelessWidget {
     );
   }
 
+}
+
+String _timeAgo(DateTime? dt) {
+  if (dt == null) return '';
+  final diff = DateTime.now().difference(dt);
+  if (diff.inMinutes < 1) return 'Just now';
+  if (diff.inMinutes < 60) return '${diff.inMinutes} minute${diff.inMinutes == 1 ? '' : 's'} ago';
+  if (diff.inHours < 24) return '${diff.inHours} hour${diff.inHours == 1 ? '' : 's'} ago';
+  return '${diff.inDays} day${diff.inDays == 1 ? '' : 's'} ago';
 }

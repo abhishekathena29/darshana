@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 import '../session/user_session.dart';
@@ -34,8 +35,22 @@ class _MainShellState extends State<MainShell> {
     if (n.metrics.axis != Axis.vertical) return false;
     final p = (n.metrics.pixels / MorphingTopNav.collapseDistance)
         .clamp(0.0, 1.0);
-    if ((p - _progress).abs() > 0.002) {
-      setState(() => _progress = p);
+    if ((p - _progress).abs() <= 0.002) return false;
+
+    // Scroll notifications can fire as a side effect of a rebuild (e.g. a
+    // StreamBuilder changing a page's content height), which happens mid
+    // build/layout/paint. Calling setState synchronously in that case
+    // throws "Build scheduled during frame" — so defer to after the
+    // current frame unless we're already outside the pipeline (i.e. a
+    // normal user scroll gesture, which happens during the idle phase).
+    void apply() {
+      if (mounted) setState(() => _progress = p);
+    }
+
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+      apply();
+    } else {
+      SchedulerBinding.instance.addPostFrameCallback((_) => apply());
     }
     return false;
   }
